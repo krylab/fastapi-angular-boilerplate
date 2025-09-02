@@ -1,12 +1,6 @@
 # Use a Python base image with uv pre-installed for convenience and speed.
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS final
 
-# Install system dependencies required for building Python packages
-RUN apt-get update && apt-get install -y \
-    libpq-dev \
-    gcc \
-    && rm -rf /var/lib/apt/lists/*
-
 # Set environment variables for uv to optimize builds
 ENV UV_COMPILE_BYTECODE=1 \
     UV_LINK_MODE=copy

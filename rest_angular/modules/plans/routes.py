@@ -1,17 +1,7 @@
 from datetime import UTC, datetime
 
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, status
 
-from ...infra.orm.uow import UnitOfWorkDep
-from ...modules.plans.repository import RateLimitRepository, TierRepository
-from ...modules.plans.schemas import (
-    RateLimitCreate,
-    RateLimitRead,
-    RateLimitUpdate,
-    TierCreate,
-    TierRead,
-    TierUpdate,
-)
 from .exceptions import (
     RateLimitAlreadyExistsException,
     RateLimitNotFoundException,
@@ -19,14 +9,22 @@ from .exceptions import (
     TierNotFoundException,
 )
 from .models import RateLimit, Tier
+from .repository import RateLimitRepositoryDep, TierRepositoryDep
+from .schemas import (
+    RateLimitCreate,
+    RateLimitRead,
+    RateLimitUpdate,
+    TierCreate,
+    TierRead,
+    TierUpdate,
+)
 
 router = APIRouter()
 
 
 # Tier routes
 @router.get("/tiers", response_model=list[TierRead])
-async def get_tiers(uow: UnitOfWorkDep):
-    repo = TierRepository(uow)
+async def get_tiers(repo: TierRepositoryDep):
     tiers = await repo.get_all()
     return [TierRead(id=tier.id, name=tier.name, created_at=tier.created_at) for tier in tiers]
 
@@ -34,9 +32,8 @@ async def get_tiers(uow: UnitOfWorkDep):
 @router.get("/tiers/{tier_id}", response_model=TierRead)
 async def get_tier(
     tier_id: int,
-    uow: UnitOfWorkDep,
+    repo: TierRepositoryDep,
 ):
-    repo = TierRepository(uow)
     tier = await repo.get_by_id(tier_id)
     if not tier:
         raise TierNotFoundException(tier_id=tier_id)
@@ -46,10 +43,8 @@ async def get_tier(
 @router.post("/tiers", response_model=TierRead, status_code=status.HTTP_201_CREATED)
 async def create_tier(
     tier_data: TierCreate,
-    uow: UnitOfWorkDep,
+    repo: TierRepositoryDep,
 ):
-    repo = TierRepository(uow)
-
     existing_tier = await repo.get_by_name(tier_data.name)
     if existing_tier:
         raise TierAlreadyExistsException(tier_data.name)
@@ -64,9 +59,8 @@ async def create_tier(
 async def update_tier(
     tier_id: int,
     tier_data: TierUpdate,
-    uow: UnitOfWorkDep,
+    repo: TierRepositoryDep,
 ):
-    repo = TierRepository(uow)
     tier = await repo.get_by_id(tier_id)
     if not tier:
         raise TierNotFoundException(tier_id=tier_id)
@@ -86,9 +80,8 @@ async def update_tier(
 @router.delete("/tiers/{tier_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_tier(
     tier_id: int,
-    uow: UnitOfWorkDep,
+    repo: TierRepositoryDep,
 ):
-    repo = TierRepository(uow)
     tier = await repo.get_by_id(tier_id)
     if not tier:
         raise TierNotFoundException(tier_id=tier_id)
@@ -98,9 +91,8 @@ async def delete_tier(
 # Rate Limit routes
 @router.get("/rate-limits", response_model=list[RateLimitRead])
 async def get_rate_limits(
-    uow: UnitOfWorkDep,
+    repo: RateLimitRepositoryDep,
 ):
-    repo = RateLimitRepository(uow)
     rate_limits = await repo.get_all()
     return [
         RateLimitRead(
@@ -118,9 +110,8 @@ async def get_rate_limits(
 @router.get("/rate-limits/{rate_limit_id}", response_model=RateLimitRead)
 async def get_rate_limit(
     rate_limit_id: int,
-    uow: UnitOfWorkDep,
+    repo: RateLimitRepositoryDep,
 ):
-    repo = RateLimitRepository(uow)
     rate_limit = await repo.get_by_id(rate_limit_id)
     if not rate_limit:
         raise RateLimitNotFoundException()
@@ -138,9 +129,8 @@ async def get_rate_limit(
 async def create_rate_limit(
     rate_limit_data: RateLimitCreate,
     tier_target_id: int,
-    uow: UnitOfWorkDep,
+    repo: RateLimitRepositoryDep,
 ):
-    repo = RateLimitRepository(uow)
     existing_rate_limit = await repo.get_by_tier_target_and_path(tier_target_id, rate_limit_data.path)
     if existing_rate_limit:
         raise RateLimitAlreadyExistsException(tier_target_id, rate_limit_data.path)
@@ -162,9 +152,8 @@ async def create_rate_limit(
 async def update_rate_limit(
     rate_limit_id: int,
     rate_limit_data: RateLimitUpdate,
-    uow: UnitOfWorkDep,
+    repo: RateLimitRepositoryDep,
 ):
-    repo = RateLimitRepository(uow)
     rate_limit = await repo.get_by_id(rate_limit_id)
     if not rate_limit:
         raise RateLimitNotFoundException()
@@ -200,9 +189,8 @@ async def update_rate_limit(
 @router.delete("/rate-limits/{rate_limit_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_rate_limit(
     rate_limit_id: int,
-    uow: UnitOfWorkDep,
+    repo: RateLimitRepositoryDep,
 ):
-    repo = RateLimitRepository(uow)
     rate_limit = await repo.get_by_id(rate_limit_id)
     if not rate_limit:
         raise RateLimitNotFoundException()

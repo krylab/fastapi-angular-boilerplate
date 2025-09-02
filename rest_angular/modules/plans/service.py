@@ -4,13 +4,13 @@ from typing import Annotated
 from fastapi import Depends
 
 from ...infra.cache.redis import RedisClient
-from ...modules.plans.models import RateLimit, Tier, TierTarget
-from ...modules.plans.repository import (
+from .models import RateLimit, Tier, TierTarget
+from .repository import (
     RateLimitRepositoryDep,
     TierRepositoryDep,
     TierTargetRepositoryDep,
 )
-from ...modules.plans.schemas import sanitize_path
+from .schemas import sanitize_path
 
 
 class RateLimiter:
@@ -59,7 +59,6 @@ class PlansService:
         tier_target = await self.tier_target_repo.get_by_target(target_type, target_id)
         if not tier_target:
             return None
-
         return await self.rate_limit_repo.get_by_tier_target_and_path(tier_target.id, path)
 
     async def get_rate_limit(self, tier_id: int, path: str) -> RateLimit | None:

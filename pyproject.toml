@@ -34,9 +34,9 @@ dependencies = [
     "cachetools>=6.1.0",
     "asyncpg>=0.30.0,<0.31",
     "apscheduler>=4.0.0a6",
-    "psycopg2>=2.9.10",
     "PyJWT>=2.8.0",
     "lelab-common",
+    "psycopg2-binary>=2.9.10",
 ]
 
 [dependency-groups]

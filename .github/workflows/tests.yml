@@ -29,6 +29,9 @@ jobs:
         uses: KengoTODA/actions-setup-docker-compose@v1
         with:
           version: "2.28.0"
+      - name: Build Docker images silently
+        run: |
+          docker compose -f docker-compose.yml -f docker-compose.test.yml build api > /dev/null
       - name: Run tests with Docker Compose
         run: |
-          docker compose -f docker-compose.yml -f docker-compose.test.yml run --build --rm api
+          docker compose -f docker-compose.yml -f docker-compose.test.yml run --rm api

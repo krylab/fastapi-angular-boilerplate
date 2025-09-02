@@ -4,9 +4,9 @@ from typing import Any
 from fastapi import Depends, Request
 from lelab_common import Settings
 
-from ...modules.plans.exceptions import RateLimitException
-from ...modules.plans.service import PlansServiceDep, RateLimiterDep
-from ...modules.plans.settings import PlansSettings
+from .exceptions import RateLimitException
+from .service import PlansServiceDep, RateLimiterDep
+from .settings import PlansSettings
 
 logger = logging.getLogger(__name__)
 
