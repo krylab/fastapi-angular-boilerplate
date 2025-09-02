@@ -19,6 +19,7 @@ COPY pyproject.toml uv.lock README.md ./
 COPY lelab-common/ ./lelab-common/
 COPY rest_angular/ ./rest_angular/
 COPY tests/ ./tests/
+COPY alembic.ini ./alembic.ini
 
 # Install all dependencies and the project itself
 RUN --mount=type=cache,target=/root/.cache/uv \
