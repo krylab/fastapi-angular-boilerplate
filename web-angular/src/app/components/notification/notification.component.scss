@@ -1,0 +1,96 @@
+/* Notification component styles */
+
+/* Animation for notification entry */
+:host {
+  display: block;
+  animation: slideInRight 0.5s ease-out forwards;
+  animation-fill-mode: both;
+}
+
+/* Animation for notification exit */
+:host.closing {
+  animation: slideOutRight 0.4s ease-in forwards;
+}
+
+/* Slide in animation from right */
+@keyframes slideInRight {
+  0% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  50% {
+    transform: translateX(-10px);
+    opacity: 0.8;
+  }
+  100% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Slide out animation to right */
+@keyframes slideOutRight {
+  0% {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
+
+/* Ensure the notification is above other content and stable */
+:host {
+  z-index: 9999;
+  position: relative;
+  min-height: 60px; /* Prevent layout shifts */
+  margin-bottom: 0.5rem;
+}
+
+/* Enhanced notification styling for better visibility */
+:host > div {
+  backdrop-filter: blur(8px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+/* Stronger colors for better contrast */
+:host .bg-red-100 {
+  background-color: rgb(254 226 226) !important;
+  border-color: rgb(239 68 68) !important;
+  box-shadow: 0 25px 50px -12px rgba(239, 68, 68, 0.25) !important;
+}
+
+:host .bg-green-100 {
+  background-color: rgb(220 252 231) !important;
+  border-color: rgb(34 197 94) !important;
+  box-shadow: 0 25px 50px -12px rgba(34, 197, 94, 0.25) !important;
+}
+
+:host .bg-yellow-100 {
+  background-color: rgb(254 249 195) !important;
+  border-color: rgb(234 179 8) !important;
+  box-shadow: 0 25px 50px -12px rgba(234, 179, 8, 0.25) !important;
+}
+
+:host .bg-blue-100 {
+  background-color: rgb(219 234 254) !important;
+  border-color: rgb(59 130 246) !important;
+  box-shadow: 0 25px 50px -12px rgba(59, 130, 246, 0.25) !important;
+}
+
+:host .bg-orange-100 {
+  background-color: rgb(255 237 213) !important;
+  border-color: rgb(234 88 12) !important;
+  box-shadow: 0 25px 50px -12px rgba(234, 88, 12, 0.25) !important;
+}
+
+/* Custom focus styles for better accessibility */
+button:focus {
+  outline: none;
+}
+
+/* Hover effects for action buttons */
+button[class*="underline"]:hover {
+  text-decoration: none;
+} 

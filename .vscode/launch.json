@@ -1,0 +1,50 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: FastAPI",
+            "type": "debugpy",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "module": "rest_angular",
+            "justMyCode": false
+        },
+        {
+            "name": "Python: Current File",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
+            "name": "Node: Debug npm script",
+            "type": "node",
+            "request": "launch",
+            "program": "${workspaceFolder}/web-angular/node_modules/.bin/npm",
+            "args": ["run", "${input:npmScript}"],
+            "cwd": "${workspaceFolder}/web-angular",
+            "console": "integratedTerminal",
+            "skipFiles": ["<node_internals>/**"],
+            "env": {
+                "NODE_ENV": "development"
+            }
+        },
+        {
+            "name": "Node: Attach to Process",
+            "type": "node",
+            "request": "attach",
+            "port": 9229,
+            "restart": true,
+            "localRoot": "${workspaceFolder}/web-angular",
+            "remoteRoot": "${workspaceFolder}/web-angular"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "npmScript",
+            "type": "promptString",
+            "description": "Enter the npm script name to debug"
+        }
+    ]
+}

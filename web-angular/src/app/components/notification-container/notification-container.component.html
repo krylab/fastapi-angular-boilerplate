@@ -1,0 +1,10 @@
+<!-- Notification Container - Fixed position top-right with highest z-index -->
+<div class="notification-container fixed top-4 right-4 flex flex-col space-y-2 max-w-sm w-full">
+  <app-notification
+    *ngFor="let notification of notifications; trackBy: trackByNotificationId"
+    [notification]="notification"
+    (close)="onNotificationClose($event)"
+    (actionClick)="onNotificationActionClick($event)"
+  >
+  </app-notification>
+</div>

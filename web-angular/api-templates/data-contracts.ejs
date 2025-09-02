@@ -1,0 +1,269 @@
+<%
+const { modelTypes, utils, config, routes } = it;
+const { formatDescription, require, _, Ts } = utils;
+
+const buildGenerics = (contract) => {
+  if (!contract.genericArgs || !contract.genericArgs.length) return '';
+
+  return '<' + contract.genericArgs.map(({ name, default: defaultType, extends: extendsType }) => {
+    return [
+      name,
+      extendsType && `extends ${extendsType}`,
+      defaultType && `= ${defaultType}`,
+    ].join('')
+  }).join(',') + '>'
+}
+
+const dataContractTemplates = {
+  enum: (contract) => {
+    return `enum ${contract.name} {\r\n${contract.content} \r\n }`;
+  },
+  interface: (contract) => {
+    return `interface ${contract.name}${buildGenerics(contract)} {\r\n${contract.content}}`;
+  },
+  type: (contract) => {
+    return `type ${contract.name}${buildGenerics(contract)} = ${contract.content}`;
+  },
+}
+
+// Helper function to create method-specific type names with resource context
+const createMethodTypeName = (methodName, path, suffix) => {
+  // Extract resource from path for better type naming
+  const pathSegments = path.split('/').filter(p => p && !p.startsWith('{') && !p.startsWith('${'));
+  const resource = pathSegments.length >= 1 ? pathSegments[0] : '';
+  
+  // Convert method name to PascalCase
+  const pascalMethodName = methodName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).replace(/\s+/g, '');
+  
+  // If methodName already includes resource context, use as-is
+  const resourceCamelCase = _.upperFirst(toCamelCase(resource));
+  if (pascalMethodName.includes(resourceCamelCase)) {
+    return `${pascalMethodName}${suffix}`;
+  }
+  
+  // For specific patterns that need resource context to avoid conflicts
+  const needsResourceContext = [
+    'Get', 'Post', 'Put', 'Patch', 'Delete',  // Generic HTTP methods
+    'GetMe', 'PatchMe', 'Me',                 // Common endpoint patterns
+    'Jwt', 'Cookie', 'Google',                // Auth patterns
+    'Login', 'Logout', 'Register'             // Auth actions
+  ];
+  
+  if (needsResourceContext.some(pattern => pascalMethodName.includes(pattern)) && resource) {
+    return `${pascalMethodName}${resourceCamelCase}${suffix}`;
+  }
+  
+  // For short names, add resource context
+  if (resource && pascalMethodName.length <= 4) {
+    return `${pascalMethodName}${resourceCamelCase}${suffix}`;
+  }
+  
+  // For duplicate or overly generic names like 'GetGet', fix them
+  if (pascalMethodName.toLowerCase().match(/^(get|post|put|patch|delete)\1$/i) && resource) {
+    const cleanMethod = pascalMethodName.substring(0, pascalMethodName.length / 2);
+    return `${cleanMethod}${resourceCamelCase}${suffix}`;
+  }
+  
+  return `${pascalMethodName}${suffix}`;
+};
+
+// Helper function to convert kebab-case to camelCase
+const toCamelCase = (str) => {
+  return str.replace(/-([a-z])/g, (match, letter) => letter.toUpperCase());
+};
+
+// Create a simplified method name from the route
+const createSimpleMethodName = (routeName, path, method) => {
+  // Split path into segments and filter out empty and parameter segments
+  // Also filter out ${id} patterns
+  const pathSegments = path.split('/').filter(p => p && !p.startsWith('{') && !p.startsWith('${'));
+  
+  if (pathSegments.length >= 1) {
+    const resource = pathSegments[0]; // e.g., 'redis', 'users', 'auth' 
+    let action = pathSegments[1]; // e.g., 'get', 'set', 'register'
+    
+    if (!action) {
+      // If no action specified, use method + resource (e.g., 'getUsers')
+      return `${method.toLowerCase()}${_.upperFirst(toCamelCase(resource))}`;
+    }
+    
+    // Convert action to camelCase
+    const camelAction = toCamelCase(action);
+    const lowerMethod = method.toLowerCase();
+    
+    // Check if action already contains the method name
+    if (camelAction.toLowerCase().includes(lowerMethod)) {
+      // If action already includes method, just use action (e.g., 'get' from '/redis/get')
+      return camelAction;
+    }
+    
+    // For routes like /users/me where the action doesn't contain the method,
+    // we need to include the method to avoid conflicts between GET /users/me and PATCH /users/me
+    const commonActions = ['me', 'profile', 'settings', 'current'];
+    if (commonActions.includes(camelAction.toLowerCase())) {
+      return `${lowerMethod}${_.upperFirst(camelAction)}`;
+    }
+    
+    // Handle nested paths like /auth/jwt/login or /auth/google/callback
+    if (pathSegments.length > 2) {
+      const subResource = toCamelCase(pathSegments[1]); // e.g., 'jwt', 'google'
+      const finalAction = toCamelCase(pathSegments[2] || method.toLowerCase()); // e.g., 'login', 'callback'
+      return `${subResource}${_.upperFirst(finalAction)}`;
+    }
+    
+    // Create the final method name: action (e.g., 'register', 'forgotPassword')
+    return camelAction;
+  }
+  
+  // Fallback: clean up the original route name and convert to camelCase
+  // Remove duplicate words and create a cleaner method name
+  if (routeName && typeof routeName === 'string') {
+    // Split by uppercase letters and filter out empty strings
+    const words = routeName.split(/(?=[A-Z])/).filter(w => w.length > 0);
+    
+    // Remove duplicate consecutive words (case-insensitive)
+    const cleanWords = [];
+    let lastWord = '';
+    for (const word of words) {
+      if (word.toLowerCase() !== lastWord.toLowerCase()) {
+        cleanWords.push(word);
+        lastWord = word;
+      }
+    }
+    
+    // If we have multiple words, create a better method name
+    if (cleanWords.length > 1) {
+      const firstWord = cleanWords[0].toLowerCase();
+      const lastWord = cleanWords[cleanWords.length - 1];
+      return `${firstWord}${lastWord}`;
+    }
+    
+    return toCamelCase(routeName.toLowerCase());
+  }
+  
+  // Final fallback using method and path
+  return `${method.toLowerCase()}${pathSegments.length > 0 ? _.upperFirst(toCamelCase(pathSegments[pathSegments.length - 1])) : 'Unknown'}`;
+};
+
+// Helper function to create a proper method name that handles path parameters
+const createProperMethodName = (routeName, path, method) => {
+  // Check if the path contains path parameters
+  if (path.includes('{')) {
+    // Extract the parameter name from the path
+    const paramMatch = path.match(/\{([^}]+)\}/);
+    if (paramMatch) {
+      const paramName = paramMatch[1];
+      // Create a method name that includes the parameter name
+      const baseName = createSimpleMethodName(routeName, path, method);
+      return `${baseName}${_.upperFirst(paramName)}`;
+    }
+  }
+  
+  return createSimpleMethodName(routeName, path, method);
+};
+
+// Helper function to create a clean method name for type generation
+const createCleanMethodName = (routePath, realPath, method) => {
+  // Check if the path contains {id} patterns (standard OpenAPI parameter placeholders)
+  if (routePath.includes('{')) {
+    // Extract the parameter name from the path
+    const paramMatch = routePath.match(/\{([^}]+)\}/);
+    if (paramMatch) {
+      const paramName = paramMatch[1];
+      // Create a method name that includes the parameter name  
+      const baseName = createSimpleMethodName('', routePath, method);
+      return `${baseName}${_.upperFirst(paramName)}`;
+    }
+  }
+  
+  return createSimpleMethodName('', routePath, method);
+};
+
+// Get configuration options
+const exportOriginalTypes = config.internalTemplateOptions && config.internalTemplateOptions.exportOriginalTypes !== undefined 
+  ? config.internalTemplateOptions.exportOriginalTypes 
+  : false; // Default to false (internal)
+
+const exportMethodTypesOnly = config.internalTemplateOptions && config.internalTemplateOptions.exportMethodTypesOnly !== undefined 
+  ? config.internalTemplateOptions.exportMethodTypesOnly 
+  : true; // Default to true (only export method types)
+%>
+
+<% if (config.internalTemplateOptions.addUtilRequiredKeysType) { %>
+type <%~ config.Ts.CodeGenKeyword.UtilRequiredKeys %><T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>
+<% } %>
+
+<% /* Generate original types (internal or exported based on config) */ %>
+<% for (const contract of modelTypes) { %>
+  <%~ includeFile('./data-contract-jsdoc.ejs', { ...it, data: { ...contract, ...contract.typeData } }) %>
+  <%~ exportOriginalTypes ? 'export ' : '' %><%~ (dataContractTemplates[contract.typeIdentifier] || dataContractTemplates.type)(contract) %>
+
+
+<% } %>
+
+<% /* Generate method-specific input and response types (exported) */ %>
+<% if (routes && routes.combined && routes.combined.length > 0) { %>
+
+<% /* Method-specific type aliases for better type safety */ %>
+<% for (const { routes: combinedRoutes = [] } of routes.combined) { %>
+<% for (const route of combinedRoutes) { %>
+<% 
+// Use raw.route and raw.method instead of the verbose routeName.usage
+const simpleMethodName = createCleanMethodName(route.raw.route, route.raw.route, route.raw.method);
+const inputTypeName = createMethodTypeName(simpleMethodName, route.request.path, 'Input');
+const resultTypeName = createMethodTypeName(simpleMethodName, route.request.path, 'Result');
+%>
+
+<% /* Generate input type */ %>
+<% const pathParams = _.values(route.request.parameters || {}); %>
+<% const hasPayload = route.request.payload && route.request.payload.type; %>
+<% const hasQuery = route.request.query && route.request.query.type; %>
+<% const hasPathParams = pathParams.length > 0; %>
+
+<% if (hasPayload && hasPathParams) { %>
+/** Input type for <%~ simpleMethodName %> method */
+export type <%~ inputTypeName %> = {
+<% pathParams.forEach(param => { %>
+  /** <%~ param.description || param.name %> */
+  <%~ param.name %>: <%~ param.type %>;
+<% }); %>
+} & <%~ route.request.payload.type %>;
+<% } else if (hasPayload) { %>
+/** Input type for <%~ simpleMethodName %> method */
+export type <%~ inputTypeName %> = <%~ route.request.payload.type %>;
+<% } else if (hasQuery && hasPathParams) { %>
+/** Input type for <%~ simpleMethodName %> method */
+export type <%~ inputTypeName %> = {
+<% pathParams.forEach(param => { %>
+  /** <%~ param.description || param.name %> */
+  <%~ param.name %>: <%~ param.type %>;
+<% }); %>
+} & <%~ route.request.query.type %>;
+<% } else if (hasQuery) { %>
+/** Input type for <%~ simpleMethodName %> method */
+export type <%~ inputTypeName %> = <%~ route.request.query.type %>;
+<% } else if (hasPathParams) { %>
+/** Input type for <%~ simpleMethodName %> method */
+export type <%~ inputTypeName %> = {
+<% pathParams.forEach(param => { %>
+  /** <%~ param.description || param.name %> */
+  <%~ param.name %>: <%~ param.type %>;
+<% }); %>
+};
+<% } else { %>
+/** Input type for <%~ simpleMethodName %> method */
+export type <%~ inputTypeName %> = void;
+<% } %>
+
+<% /* Generate result type */ %>
+<% if (route.response.type && route.response.type !== 'void' && route.response.type !== 'any') { %>
+/** Result type for <%~ simpleMethodName %> method */
+export type <%~ resultTypeName %> = <%~ route.response.type %>;
+<% } else { %>
+/** Result type for <%~ simpleMethodName %> method */
+export type <%~ resultTypeName %> = any;
+<% } %>
+
+<% } %>
+<% } %>
+<% } %>

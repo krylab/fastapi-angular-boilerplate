@@ -1,0 +1,87 @@
+<%
+const { apiConfig, routes, utils, config } = it;
+const { info, servers, externalDocs } = apiConfig;
+const { _, require, formatDescription } = utils;
+
+const server = (servers && servers[0]) || { url: "" };
+
+const descriptionLines = _.compact([
+  `@title ${info.title || "No title"}`,
+  info.version && `@version ${info.version}`,
+  info.license && `@license ${_.compact([
+    info.license.name,
+    info.license.url && `(${info.license.url})`,
+  ]).join(" ")}`,
+  info.termsOfService && `@termsOfService ${info.termsOfService}`,
+  server.url && `@baseUrl ${server.url}`,
+  externalDocs.url && `@externalDocs ${externalDocs.url}`,
+  info.contact && `@contact ${_.compact([
+    info.contact.name,
+    info.contact.email && `<${info.contact.email}>`,
+    info.contact.url && `(${info.contact.url})`,
+  ]).join(" ")}`,
+  info.description && " ",
+  info.description && _.replace(formatDescription(info.description), /\n/g, "\n * "),
+]);
+
+// For modular generation, use it.route which contains the current module information
+const isModular = config.modular && config.moduleNameFirstTag;
+const currentModule = it.route; // Contains { moduleName: 'xxx', routes: [...] }
+const className = isModular && currentModule 
+  ? _.upperFirst(currentModule.moduleName)
+  : config.apiClassName;
+
+%>
+
+/*
+ * ---------------------------------------------------------------
+ * ## THIS FILE WAS GENERATED VIA SWAGGER-TYPESCRIPT-API        ##
+ * ##                                                           ##
+ * ## AUTHOR: acacode                                           ##
+ * ## SOURCE: https://github.com/acacode/swagger-typescript-api ##
+ * ---------------------------------------------------------------
+ */
+
+import { Injectable, Signal, computed, signal, inject } from '@angular/core';
+import { httpResource } from '@angular/common/http';
+import * as Types from './data-contracts';
+
+<% if (descriptionLines.length) { %>
+/**
+<% descriptionLines.forEach((descriptionLine) => { %>
+* <%~ descriptionLine %>
+
+<% }) %>
+*/
+<% } %>
+@Injectable({ providedIn: 'root' })
+export class <%~ className %> {
+
+<% if (routes.outOfModule) { %>
+  <% for (const route of routes.outOfModule) { %>
+
+  <%~ includeFile('./procedure-call.ejs', { ...it, route }) %>
+
+  <% } %>
+<% } %>
+
+<% if (isModular && currentModule && currentModule.routes) { %>
+  <% // Modular mode - render only current module routes %>
+  <% for (const route of currentModule.routes) { %>
+
+  <%~ includeFile('./procedure-call.ejs', { ...it, route }) %>
+
+  <% } %>
+<% } else if (routes.combined) { %>
+  <% // Non-modular mode - render all routes with section headers %>
+  <% for (const { routes: combinedRoutes = [], moduleName } of routes.combined) { %>
+  
+  // <%~ moduleName %> API methods
+  <% for (const route of combinedRoutes) { %>
+
+  <%~ includeFile('./procedure-call.ejs', { ...it, route }) %>
+
+  <% } %>
+  <% } %>
+<% } %>
+} 

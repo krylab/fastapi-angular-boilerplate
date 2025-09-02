@@ -1,0 +1,31 @@
+/* Notification Container Styles */
+
+:host {
+  /* Ensure the container doesn't interfere with page layout */
+  position: fixed;
+  top: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: 9999 !important; /* Increased z-index with !important */
+}
+
+/* Allow pointer events on the actual notification container */
+.fixed {
+  pointer-events: auto;
+}
+
+/* Responsive behavior for smaller screens */
+@media (max-width: 640px) {
+  .fixed {
+    top: 1rem;
+    right: 1rem;
+    left: 1rem;
+    max-width: none;
+  }
+}
+
+/* Additional styles to ensure notifications appear above auth layout */
+.notification-container {
+  position: relative !important;
+  z-index: 10000 !important;
+}
