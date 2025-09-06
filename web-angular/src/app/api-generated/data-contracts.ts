@@ -105,18 +105,18 @@ interface BodyVerifyVerifyApiAuthVerifyPost {
   token: string;
 }
 
-type CreateRateLimitApiRateLimitsPostData = RateLimitRead;
+type CreateRateLimitApiPlansRateLimitsPostData = RateLimitRead;
 
-interface CreateRateLimitApiRateLimitsPostParams {
+interface CreateRateLimitApiPlansRateLimitsPostParams {
   /** Tier Target Id */
   tier_target_id: number;
 }
 
-type CreateTierApiTiersPostData = TierRead;
+type CreateTierApiPlansTiersPostData = TierRead;
 
-type DeleteRateLimitApiRateLimitsRateLimitIdDeleteData = any;
+type DeleteRateLimitApiPlansRateLimitsRateLimitIdDeleteData = any;
 
-type DeleteTierApiTiersTierIdDeleteData = any;
+type DeleteTierApiPlansTiersTierIdDeleteData = any;
 
 /** ErrorModel */
 interface ErrorModel {
@@ -150,15 +150,15 @@ interface ErrorResponse {
   type?: string;
 }
 
-type GetRateLimitApiRateLimitsRateLimitIdGetData = RateLimitRead;
+type GetRateLimitApiPlansRateLimitsRateLimitIdGetData = RateLimitRead;
 
-/** Response Get Rate Limits Api Rate Limits Get */
-type GetRateLimitsApiRateLimitsGetData = RateLimitRead[];
+/** Response Get Rate Limits Api Plans Rate Limits Get */
+type GetRateLimitsApiPlansRateLimitsGetData = RateLimitRead[];
 
-type GetTierApiTiersTierIdGetData = TierRead;
+type GetTierApiPlansTiersTierIdGetData = TierRead;
 
-/** Response Get Tiers Api Tiers Get */
-type GetTiersApiTiersGetData = TierRead[];
+/** Response Get Tiers Api Plans Tiers Get */
+type GetTiersApiPlansTiersGetData = TierRead[];
 
 /** Response Health Check Api Health Get */
 type HealthCheckApiHealthGetData = Record<string, string>;
@@ -256,9 +256,9 @@ interface TierUpdate {
   name?: string | null;
 }
 
-type UpdateRateLimitApiRateLimitsRateLimitIdPutData = RateLimitRead;
+type UpdateRateLimitApiPlansRateLimitsRateLimitIdPutData = RateLimitRead;
 
-type UpdateTierApiTiersTierIdPutData = TierRead;
+type UpdateTierApiPlansTiersTierIdPutData = TierRead;
 
 /**
  * UserCreate
@@ -439,17 +439,17 @@ export type CallbackInput = {
 /** Result type for callback method */
 export type CallbackResult = OauthGoogleJwtCallbackApiAuthGoogleCallbackGetData;
 
-/** Input type for me method */
-export type MeInput = void;
+/** Input type for getMe method */
+export type GetMeInput = void;
 
-/** Result type for me method */
-export type MeResult = UsersCurrentUserApiUsersMeGetData;
+/** Result type for getMe method */
+export type GetMeResult = UsersCurrentUserApiUsersMeGetData;
 
-/** Input type for me method */
-export type MeInput1 = UserUpdate;
+/** Input type for patchMe method */
+export type PatchMeInput = UserUpdate;
 
-/** Result type for me method */
-export type MeResult1 = UsersPatchCurrentUserApiUsersMePatchData;
+/** Result type for patchMe method */
+export type PatchMeResult = UsersPatchCurrentUserApiUsersMePatchData;
 
 /** Input type for getUsersById method */
 export type GetUsersByIdInput = {
@@ -482,13 +482,13 @@ export type DeleteUsersByIdResult = UsersDeleteUserApiUsersIdDeleteData;
 export type GetTiersInput = void;
 
 /** Result type for getTiers method */
-export type GetTiersResult = GetTiersApiTiersGetData;
+export type GetTiersResult = GetTiersApiPlansTiersGetData;
 
 /** Input type for postTiers method */
 export type PostTiersInput = TierCreate;
 
 /** Result type for postTiers method */
-export type PostTiersResult = CreateTierApiTiersPostData;
+export type PostTiersResult = CreateTierApiPlansTiersPostData;
 
 /** Input type for getTiersByTierId method */
 export type GetTiersByTierIdInput = {
@@ -497,7 +497,7 @@ export type GetTiersByTierIdInput = {
 };
 
 /** Result type for getTiersByTierId method */
-export type GetTiersByTierIdResult = GetTierApiTiersTierIdGetData;
+export type GetTiersByTierIdResult = GetTierApiPlansTiersTierIdGetData;
 
 /** Input type for putTiersByTierId method */
 export type PutTiersByTierIdInput = {
@@ -506,7 +506,7 @@ export type PutTiersByTierIdInput = {
 } & TierUpdate;
 
 /** Result type for putTiersByTierId method */
-export type PutTiersByTierIdResult = UpdateTierApiTiersTierIdPutData;
+export type PutTiersByTierIdResult = UpdateTierApiPlansTiersTierIdPutData;
 
 /** Input type for deleteTiersByTierId method */
 export type DeleteTiersByTierIdInput = {
@@ -515,19 +515,19 @@ export type DeleteTiersByTierIdInput = {
 };
 
 /** Result type for deleteTiersByTierId method */
-export type DeleteTiersByTierIdResult = DeleteTierApiTiersTierIdDeleteData;
+export type DeleteTiersByTierIdResult = DeleteTierApiPlansTiersTierIdDeleteData;
 
 /** Input type for getRateLimits method */
 export type GetRateLimitsInput = void;
 
 /** Result type for getRateLimits method */
-export type GetRateLimitsResult = GetRateLimitsApiRateLimitsGetData;
+export type GetRateLimitsResult = GetRateLimitsApiPlansRateLimitsGetData;
 
 /** Input type for postRateLimits method */
 export type PostRateLimitsInput = RateLimitCreate;
 
 /** Result type for postRateLimits method */
-export type PostRateLimitsResult = CreateRateLimitApiRateLimitsPostData;
+export type PostRateLimitsResult = CreateRateLimitApiPlansRateLimitsPostData;
 
 /** Input type for getRateLimitsByRateLimitId method */
 export type GetRateLimitsByRateLimitIdInput = {
@@ -537,7 +537,7 @@ export type GetRateLimitsByRateLimitIdInput = {
 
 /** Result type for getRateLimitsByRateLimitId method */
 export type GetRateLimitsByRateLimitIdResult =
-  GetRateLimitApiRateLimitsRateLimitIdGetData;
+  GetRateLimitApiPlansRateLimitsRateLimitIdGetData;
 
 /** Input type for putRateLimitsByRateLimitId method */
 export type PutRateLimitsByRateLimitIdInput = {
@@ -547,7 +547,7 @@ export type PutRateLimitsByRateLimitIdInput = {
 
 /** Result type for putRateLimitsByRateLimitId method */
 export type PutRateLimitsByRateLimitIdResult =
-  UpdateRateLimitApiRateLimitsRateLimitIdPutData;
+  UpdateRateLimitApiPlansRateLimitsRateLimitIdPutData;
 
 /** Input type for deleteRateLimitsByRateLimitId method */
 export type DeleteRateLimitsByRateLimitIdInput = {
@@ -557,4 +557,4 @@ export type DeleteRateLimitsByRateLimitIdInput = {
 
 /** Result type for deleteRateLimitsByRateLimitId method */
 export type DeleteRateLimitsByRateLimitIdResult =
-  DeleteRateLimitApiRateLimitsRateLimitIdDeleteData;
+  DeleteRateLimitApiPlansRateLimitsRateLimitIdDeleteData;

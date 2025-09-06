@@ -21,17 +21,17 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name Tiers
+   * @name PlansTiers
    * @summary Get Tiers
-   * @request GET:/api/tiers
-   * @response `200` `GetTiersApiTiersGetData` Successful Response
+   * @request GET:/api/plans/tiers
+   * @response `200` `GetTiersApiPlansTiersGetData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
   getTiers = (trigger?: Signal<any>, host?: string) => {
     return httpResource<Types.GetTiersResult>(() => {
       if (!trigger?.()) return undefined;
 
-      const url = host ? `${host}/api/tiers` : "/api/tiers";
+      const url = host ? `${host}/api/plans/tiers` : "/api/plans/tiers";
 
       return {
         url,
@@ -44,10 +44,10 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name Tiers
+   * @name PlansTiers
    * @summary Create Tier
-   * @request POST:/api/tiers
-   * @response `201` `CreateTierApiTiersPostData` Successful Response
+   * @request POST:/api/plans/tiers
+   * @response `201` `CreateTierApiPlansTiersPostData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
   postTiers = (
@@ -58,7 +58,7 @@ export class Plans {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
-      const url = host ? `${host}/api/tiers` : "/api/tiers";
+      const url = host ? `${host}/api/plans/tiers` : "/api/plans/tiers";
 
       return {
         url,
@@ -72,10 +72,10 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name Tiers
+   * @name PlansTiers
    * @summary Get Tier
-   * @request GET:/api/tiers/{tier_id}
-   * @response `200` `GetTierApiTiersTierIdGetData` Successful Response
+   * @request GET:/api/plans/tiers/{tier_id}
+   * @response `200` `GetTierApiPlansTiersTierIdGetData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
   getTiersByTierId = (
@@ -86,7 +86,9 @@ export class Plans {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
-      let url = host ? `${host}/api/tiers/{tier_id}` : "/api/tiers/{tier_id}";
+      let url = host
+        ? `${host}/api/plans/tiers/{tier_id}`
+        : "/api/plans/tiers/{tier_id}";
       url = url.replace("{tierId}", String(resolvedParams.tierId));
 
       return {
@@ -100,10 +102,10 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name Tiers
+   * @name PlansTiers
    * @summary Update Tier
-   * @request PUT:/api/tiers/{tier_id}
-   * @response `200` `UpdateTierApiTiersTierIdPutData` Successful Response
+   * @request PUT:/api/plans/tiers/{tier_id}
+   * @response `200` `UpdateTierApiPlansTiersTierIdPutData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
   putTiersByTierId = (
@@ -114,7 +116,9 @@ export class Plans {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
-      let url = host ? `${host}/api/tiers/{tier_id}` : "/api/tiers/{tier_id}";
+      let url = host
+        ? `${host}/api/plans/tiers/{tier_id}`
+        : "/api/plans/tiers/{tier_id}";
       url = url.replace("{tierId}", String(resolvedParams.tierId));
 
       return {
@@ -129,10 +133,10 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name Tiers
+   * @name PlansTiers
    * @summary Delete Tier
-   * @request DELETE:/api/tiers/{tier_id}
-   * @response `204` `DeleteTierApiTiersTierIdDeleteData` Successful Response
+   * @request DELETE:/api/plans/tiers/{tier_id}
+   * @response `204` `DeleteTierApiPlansTiersTierIdDeleteData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
   deleteTiersByTierId = (
@@ -143,7 +147,9 @@ export class Plans {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
-      let url = host ? `${host}/api/tiers/{tier_id}` : "/api/tiers/{tier_id}";
+      let url = host
+        ? `${host}/api/plans/tiers/{tier_id}`
+        : "/api/plans/tiers/{tier_id}";
       url = url.replace("{tierId}", String(resolvedParams.tierId));
 
       return {
@@ -157,17 +163,19 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name RateLimits
+   * @name PlansRateLimits
    * @summary Get Rate Limits
-   * @request GET:/api/rate-limits
-   * @response `200` `GetRateLimitsApiRateLimitsGetData` Successful Response
+   * @request GET:/api/plans/rate-limits
+   * @response `200` `GetRateLimitsApiPlansRateLimitsGetData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
   getRateLimits = (trigger?: Signal<any>, host?: string) => {
     return httpResource<Types.GetRateLimitsResult>(() => {
       if (!trigger?.()) return undefined;
 
-      const url = host ? `${host}/api/rate-limits` : "/api/rate-limits";
+      const url = host
+        ? `${host}/api/plans/rate-limits`
+        : "/api/plans/rate-limits";
 
       return {
         url,
@@ -180,10 +188,10 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name RateLimits
+   * @name PlansRateLimits
    * @summary Create Rate Limit
-   * @request POST:/api/rate-limits
-   * @response `201` `CreateRateLimitApiRateLimitsPostData` Successful Response
+   * @request POST:/api/plans/rate-limits
+   * @response `201` `CreateRateLimitApiPlansRateLimitsPostData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
   postRateLimits = (
@@ -194,7 +202,9 @@ export class Plans {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
-      const url = host ? `${host}/api/rate-limits` : "/api/rate-limits";
+      const url = host
+        ? `${host}/api/plans/rate-limits`
+        : "/api/plans/rate-limits";
 
       const queryParams: Record<string, string> = {};
       // Extract query parameters (excluding path parameters)
@@ -217,10 +227,10 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name RateLimits
+   * @name PlansRateLimits
    * @summary Get Rate Limit
-   * @request GET:/api/rate-limits/{rate_limit_id}
-   * @response `200` `GetRateLimitApiRateLimitsRateLimitIdGetData` Successful Response
+   * @request GET:/api/plans/rate-limits/{rate_limit_id}
+   * @response `200` `GetRateLimitApiPlansRateLimitsRateLimitIdGetData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
   getRateLimitsByRateLimitId = (
@@ -232,8 +242,8 @@ export class Plans {
       if (!resolvedParams) return undefined;
 
       let url = host
-        ? `${host}/api/rate-limits/{rate_limit_id}`
-        : "/api/rate-limits/{rate_limit_id}";
+        ? `${host}/api/plans/rate-limits/{rate_limit_id}`
+        : "/api/plans/rate-limits/{rate_limit_id}";
       url = url.replace("{rateLimitId}", String(resolvedParams.rateLimitId));
 
       return {
@@ -247,10 +257,10 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name RateLimits
+   * @name PlansRateLimits
    * @summary Update Rate Limit
-   * @request PUT:/api/rate-limits/{rate_limit_id}
-   * @response `200` `UpdateRateLimitApiRateLimitsRateLimitIdPutData` Successful Response
+   * @request PUT:/api/plans/rate-limits/{rate_limit_id}
+   * @response `200` `UpdateRateLimitApiPlansRateLimitsRateLimitIdPutData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
   putRateLimitsByRateLimitId = (
@@ -262,8 +272,8 @@ export class Plans {
       if (!resolvedParams) return undefined;
 
       let url = host
-        ? `${host}/api/rate-limits/{rate_limit_id}`
-        : "/api/rate-limits/{rate_limit_id}";
+        ? `${host}/api/plans/rate-limits/{rate_limit_id}`
+        : "/api/plans/rate-limits/{rate_limit_id}";
       url = url.replace("{rateLimitId}", String(resolvedParams.rateLimitId));
 
       return {
@@ -278,10 +288,10 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name RateLimits
+   * @name PlansRateLimits
    * @summary Delete Rate Limit
-   * @request DELETE:/api/rate-limits/{rate_limit_id}
-   * @response `204` `DeleteRateLimitApiRateLimitsRateLimitIdDeleteData` Successful Response
+   * @request DELETE:/api/plans/rate-limits/{rate_limit_id}
+   * @response `204` `DeleteRateLimitApiPlansRateLimitsRateLimitIdDeleteData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
   deleteRateLimitsByRateLimitId = (
@@ -293,8 +303,8 @@ export class Plans {
       if (!resolvedParams) return undefined;
 
       let url = host
-        ? `${host}/api/rate-limits/{rate_limit_id}`
-        : "/api/rate-limits/{rate_limit_id}";
+        ? `${host}/api/plans/rate-limits/{rate_limit_id}`
+        : "/api/plans/rate-limits/{rate_limit_id}";
       url = url.replace("{rateLimitId}", String(resolvedParams.rateLimitId));
 
       return {

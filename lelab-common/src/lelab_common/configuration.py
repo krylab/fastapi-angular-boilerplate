@@ -23,6 +23,6 @@ class AppSettings(BaseSettings):
 
     environment: str = "dev"
     log_level: str = Field(default="INFO", description="Logging level")
-    host: str = Field(default="127.0.0.1", description="FastAPI host")
+    host: str = Field(default="localhost", description="FastAPI host")
     port: int = Field(default=8000, ge=1, le=65535, description="FastAPI port")
     reload: bool = Field(default=False, description="Enable uvicorn reloading")

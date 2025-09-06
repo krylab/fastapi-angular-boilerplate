@@ -26,15 +26,6 @@ You can check your Node.js version with:
 node --version
 ```
 
-## Pre-commit Hooks
-
-Set up pre-commit hooks to ensure code quality before each commit after running `uv sync`:
-
-```bash
-# Install the git hook scripts
-uv run pre-commit install
-```
-
 ## Environment Setup
 
 Before running the application, you need to set up the required services. You have two options:
@@ -132,7 +123,7 @@ uv run -m rest_angular
 
 This will start the FastAPI server on the configured host (default: http://localhost:8000).
 
-Visit `/api/docs` for complete API documentation with interactive Swagger UI.
+Visit `http://localhost:8000/api/docs` for complete API documentation with interactive Swagger UI.
 
 ## Running the Angular Frontend
 
@@ -197,6 +188,15 @@ uv run alembic revision --autogenerate
 
 # For empty file generation.
 uv run alembic revision
+```
+
+## Pre-commit Hooks
+
+Set up pre-commit hooks to ensure code quality before each commit after running `uv sync`:
+
+```bash
+# Install the git hook scripts
+uv run pre-commit install
 ```
 
 ## Running Tests

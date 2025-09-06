@@ -28,8 +28,8 @@ export class Users {
    * @response `200` `UsersCurrentUserApiUsersMeGetData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  me = (trigger?: Signal<any>, host?: string) => {
-    return httpResource<Types.MeResult>(() => {
+  getMe = (trigger?: Signal<any>, host?: string) => {
+    return httpResource<Types.GetMeResult>(() => {
       if (!trigger?.()) return undefined;
 
       const url = host ? `${host}/api/users/me` : "/api/users/me";
@@ -52,8 +52,8 @@ export class Users {
    * @response `200` `UsersPatchCurrentUserApiUsersMePatchData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  me = (params: Signal<Types.MeInput | undefined>, host?: string) => {
-    return httpResource<Types.MeResult>(() => {
+  patchMe = (params: Signal<Types.PatchMeInput | undefined>, host?: string) => {
+    return httpResource<Types.PatchMeResult>(() => {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
