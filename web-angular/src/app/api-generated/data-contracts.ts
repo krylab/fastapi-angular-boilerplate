@@ -105,6 +105,19 @@ interface BodyVerifyVerifyApiAuthVerifyPost {
   token: string;
 }
 
+type CreateRateLimitApiRateLimitsPostData = RateLimitRead;
+
+interface CreateRateLimitApiRateLimitsPostParams {
+  /** Tier Target Id */
+  tier_target_id: number;
+}
+
+type CreateTierApiTiersPostData = TierRead;
+
+type DeleteRateLimitApiRateLimitsRateLimitIdDeleteData = any;
+
+type DeleteTierApiTiersTierIdDeleteData = any;
+
 /** ErrorModel */
 interface ErrorModel {
   /** Detail */
@@ -137,6 +150,16 @@ interface ErrorResponse {
   type?: string;
 }
 
+type GetRateLimitApiRateLimitsRateLimitIdGetData = RateLimitRead;
+
+/** Response Get Rate Limits Api Rate Limits Get */
+type GetRateLimitsApiRateLimitsGetData = RateLimitRead[];
+
+type GetTierApiTiersTierIdGetData = TierRead;
+
+/** Response Get Tiers Api Tiers Get */
+type GetTiersApiTiersGetData = TierRead[];
+
 /** Response Health Check Api Health Get */
 type HealthCheckApiHealthGetData = Record<string, string>;
 
@@ -162,11 +185,80 @@ interface OauthGoogleJwtCallbackApiAuthGoogleCallbackGetParams {
   state?: string | null;
 }
 
+/** RateLimitCreate */
+interface RateLimitCreate {
+  /** Limit */
+  limit: number;
+  /** Name */
+  name?: string | null;
+  /** Path */
+  path: string;
+  /** Period */
+  period: number;
+}
+
+/** RateLimitRead */
+interface RateLimitRead {
+  /** Id */
+  id: number;
+  /** Limit */
+  limit: number;
+  /** Name */
+  name: string;
+  /** Path */
+  path: string;
+  /** Period */
+  period: number;
+  /** Tier Target Id */
+  tier_target_id: number;
+}
+
+/** RateLimitUpdate */
+interface RateLimitUpdate {
+  /** Limit */
+  limit?: number | null;
+  /** Name */
+  name?: string | null;
+  /** Path */
+  path?: string | null;
+  /** Period */
+  period?: number | null;
+}
+
 type RegisterRegisterApiAuthRegisterPostData = UserRead;
 
 type ResetForgotPasswordApiAuthForgotPasswordPostData = any;
 
 type ResetResetPasswordApiAuthResetPasswordPostData = any;
+
+/** TierCreate */
+interface TierCreate {
+  /** Name */
+  name: string;
+}
+
+/** TierRead */
+interface TierRead {
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /** Id */
+  id: number;
+  /** Name */
+  name: string;
+}
+
+/** TierUpdate */
+interface TierUpdate {
+  /** Name */
+  name?: string | null;
+}
+
+type UpdateRateLimitApiRateLimitsRateLimitIdPutData = RateLimitRead;
+
+type UpdateTierApiTiersTierIdPutData = TierRead;
 
 /**
  * UserCreate
@@ -266,75 +358,74 @@ export type HealthInput = void;
 /** Result type for health method */
 export type HealthResult = HealthCheckApiHealthGetData;
 
-/** Input type for authRegister method */
-export type AuthRegisterApiInput = UserCreate;
+/** Input type for register method */
+export type RegisterInput = UserCreate;
 
-/** Result type for authRegister method */
-export type AuthRegisterApiResult = RegisterRegisterApiAuthRegisterPostData;
+/** Result type for register method */
+export type RegisterResult = RegisterRegisterApiAuthRegisterPostData;
 
-/** Input type for authForgotPassword method */
-export type AuthForgotPasswordInput =
+/** Input type for forgotPassword method */
+export type ForgotPasswordInput =
   BodyResetForgotPasswordApiAuthForgotPasswordPost;
 
-/** Result type for authForgotPassword method */
-export type AuthForgotPasswordResult =
+/** Result type for forgotPassword method */
+export type ForgotPasswordResult =
   ResetForgotPasswordApiAuthForgotPasswordPostData;
 
-/** Input type for authResetPassword method */
-export type AuthResetPasswordInput =
-  BodyResetResetPasswordApiAuthResetPasswordPost;
+/** Input type for resetPassword method */
+export type ResetPasswordInput = BodyResetResetPasswordApiAuthResetPasswordPost;
 
-/** Result type for authResetPassword method */
-export type AuthResetPasswordResult =
+/** Result type for resetPassword method */
+export type ResetPasswordResult =
   ResetResetPasswordApiAuthResetPasswordPostData;
 
-/** Input type for authRequestVerifyToken method */
-export type AuthRequestVerifyTokenInput =
+/** Input type for requestVerifyToken method */
+export type RequestVerifyTokenInput =
   BodyVerifyRequestTokenApiAuthRequestVerifyTokenPost;
 
-/** Result type for authRequestVerifyToken method */
-export type AuthRequestVerifyTokenResult =
+/** Result type for requestVerifyToken method */
+export type RequestVerifyTokenResult =
   VerifyRequestTokenApiAuthRequestVerifyTokenPostData;
 
-/** Input type for authVerify method */
-export type AuthVerifyInput = BodyVerifyVerifyApiAuthVerifyPost;
+/** Input type for verify method */
+export type VerifyInput = BodyVerifyVerifyApiAuthVerifyPost;
 
-/** Result type for authVerify method */
-export type AuthVerifyResult = VerifyVerifyApiAuthVerifyPostData;
+/** Result type for verify method */
+export type VerifyResult = VerifyVerifyApiAuthVerifyPostData;
 
-/** Input type for authJwt method */
-export type AuthJwtApiInput = BodyAuthJwtLoginApiAuthJwtLoginPost;
+/** Input type for loginJwt method */
+export type LoginJwtInput = BodyAuthJwtLoginApiAuthJwtLoginPost;
 
-/** Result type for authJwt method */
-export type AuthJwtApiResult = AuthJwtLoginApiAuthJwtLoginPostData;
+/** Result type for loginJwt method */
+export type LoginJwtResult = AuthJwtLoginApiAuthJwtLoginPostData;
 
-/** Input type for authJwt method */
-export type AuthJwtApiInput = void;
+/** Input type for logoutJwt method */
+export type LogoutJwtInput = void;
 
-/** Result type for authJwt method */
-export type AuthJwtApiResult = AuthJwtLogoutApiAuthJwtLogoutPostData;
+/** Result type for logoutJwt method */
+export type LogoutJwtResult = AuthJwtLogoutApiAuthJwtLogoutPostData;
 
-/** Input type for authCookie method */
-export type AuthCookieApiInput = BodyAuthCookieLoginApiAuthCookieLoginPost;
+/** Input type for loginCookie method */
+export type LoginCookieInput = BodyAuthCookieLoginApiAuthCookieLoginPost;
 
-/** Result type for authCookie method */
-export type AuthCookieApiResult = AuthCookieLoginApiAuthCookieLoginPostData;
+/** Result type for loginCookie method */
+export type LoginCookieResult = AuthCookieLoginApiAuthCookieLoginPostData;
 
-/** Input type for authCookie method */
-export type AuthCookieApiInput = void;
+/** Input type for logoutCookie method */
+export type LogoutCookieInput = void;
 
-/** Result type for authCookie method */
-export type AuthCookieApiResult = AuthCookieLogoutApiAuthCookieLogoutPostData;
+/** Result type for logoutCookie method */
+export type LogoutCookieResult = AuthCookieLogoutApiAuthCookieLogoutPostData;
 
-/** Input type for authGoogle method */
-export type AuthGoogleApiInput = void;
+/** Input type for authorize method */
+export type AuthorizeInput = void;
 
-/** Result type for authGoogle method */
-export type AuthGoogleApiResult =
+/** Result type for authorize method */
+export type AuthorizeResult =
   OauthGoogleJwtAuthorizeApiAuthGoogleAuthorizeGetData;
 
-/** Input type for authGoogle method */
-export type AuthGoogleApiInput = {
+/** Input type for callback method */
+export type CallbackInput = {
   /** Code */
   code?: string | null;
   /** Code Verifier */
@@ -345,45 +436,125 @@ export type AuthGoogleApiInput = {
   state?: string | null;
 };
 
-/** Result type for authGoogle method */
-export type AuthGoogleApiResult =
-  OauthGoogleJwtCallbackApiAuthGoogleCallbackGetData;
+/** Result type for callback method */
+export type CallbackResult = OauthGoogleJwtCallbackApiAuthGoogleCallbackGetData;
 
-/** Input type for usersMe method */
-export type UsersMeApiInput = void;
+/** Input type for me method */
+export type MeInput = void;
 
-/** Result type for usersMe method */
-export type UsersMeApiResult = UsersCurrentUserApiUsersMeGetData;
+/** Result type for me method */
+export type MeResult = UsersCurrentUserApiUsersMeGetData;
 
-/** Input type for usersMe method */
-export type UsersMeApiInput = UserUpdate;
+/** Input type for me method */
+export type MeInput1 = UserUpdate;
 
-/** Result type for usersMe method */
-export type UsersMeApiResult = UsersPatchCurrentUserApiUsersMePatchData;
+/** Result type for me method */
+export type MeResult1 = UsersPatchCurrentUserApiUsersMePatchData;
 
-/** Input type for usersId method */
-export type UsersIdInput = {
+/** Input type for getUsersById method */
+export type GetUsersByIdInput = {
   /** id */
   id: string;
 };
 
-/** Result type for usersId method */
-export type UsersIdResult = UsersUserApiUsersIdGetData;
+/** Result type for getUsersById method */
+export type GetUsersByIdResult = UsersUserApiUsersIdGetData;
 
-/** Input type for usersId method */
-export type UsersIdInput = {
+/** Input type for patchUsersById method */
+export type PatchUsersByIdInput = {
   /** id */
   id: string;
 } & UserUpdate;
 
-/** Result type for usersId method */
-export type UsersIdResult = UsersPatchUserApiUsersIdPatchData;
+/** Result type for patchUsersById method */
+export type PatchUsersByIdResult = UsersPatchUserApiUsersIdPatchData;
 
-/** Input type for usersId method */
-export type UsersIdInput = {
+/** Input type for deleteUsersById method */
+export type DeleteUsersByIdInput = {
   /** id */
   id: string;
 };
 
-/** Result type for usersId method */
-export type UsersIdResult = UsersDeleteUserApiUsersIdDeleteData;
+/** Result type for deleteUsersById method */
+export type DeleteUsersByIdResult = UsersDeleteUserApiUsersIdDeleteData;
+
+/** Input type for getTiers method */
+export type GetTiersInput = void;
+
+/** Result type for getTiers method */
+export type GetTiersResult = GetTiersApiTiersGetData;
+
+/** Input type for postTiers method */
+export type PostTiersInput = TierCreate;
+
+/** Result type for postTiers method */
+export type PostTiersResult = CreateTierApiTiersPostData;
+
+/** Input type for getTiersByTierId method */
+export type GetTiersByTierIdInput = {
+  /** tierId */
+  tierId: number;
+};
+
+/** Result type for getTiersByTierId method */
+export type GetTiersByTierIdResult = GetTierApiTiersTierIdGetData;
+
+/** Input type for putTiersByTierId method */
+export type PutTiersByTierIdInput = {
+  /** tierId */
+  tierId: number;
+} & TierUpdate;
+
+/** Result type for putTiersByTierId method */
+export type PutTiersByTierIdResult = UpdateTierApiTiersTierIdPutData;
+
+/** Input type for deleteTiersByTierId method */
+export type DeleteTiersByTierIdInput = {
+  /** tierId */
+  tierId: number;
+};
+
+/** Result type for deleteTiersByTierId method */
+export type DeleteTiersByTierIdResult = DeleteTierApiTiersTierIdDeleteData;
+
+/** Input type for getRateLimits method */
+export type GetRateLimitsInput = void;
+
+/** Result type for getRateLimits method */
+export type GetRateLimitsResult = GetRateLimitsApiRateLimitsGetData;
+
+/** Input type for postRateLimits method */
+export type PostRateLimitsInput = RateLimitCreate;
+
+/** Result type for postRateLimits method */
+export type PostRateLimitsResult = CreateRateLimitApiRateLimitsPostData;
+
+/** Input type for getRateLimitsByRateLimitId method */
+export type GetRateLimitsByRateLimitIdInput = {
+  /** rateLimitId */
+  rateLimitId: number;
+};
+
+/** Result type for getRateLimitsByRateLimitId method */
+export type GetRateLimitsByRateLimitIdResult =
+  GetRateLimitApiRateLimitsRateLimitIdGetData;
+
+/** Input type for putRateLimitsByRateLimitId method */
+export type PutRateLimitsByRateLimitIdInput = {
+  /** rateLimitId */
+  rateLimitId: number;
+} & RateLimitUpdate;
+
+/** Result type for putRateLimitsByRateLimitId method */
+export type PutRateLimitsByRateLimitIdResult =
+  UpdateRateLimitApiRateLimitsRateLimitIdPutData;
+
+/** Input type for deleteRateLimitsByRateLimitId method */
+export type DeleteRateLimitsByRateLimitIdInput = {
+  /** rateLimitId */
+  rateLimitId: number;
+};
+
+/** Result type for deleteRateLimitsByRateLimitId method */
+export type DeleteRateLimitsByRateLimitIdResult =
+  DeleteRateLimitApiRateLimitsRateLimitIdDeleteData;

@@ -18,6 +18,15 @@
             "justMyCode": false
         },
         {
+            "name": "Python: Test File",
+            "type": "debugpy",
+            "request": "launch",
+            "module": "pytest",
+            "args": ["-vv", "${file}"],
+            "console": "integratedTerminal",
+            "justMyCode": false
+        },
+        {
             "name": "Node: Debug npm script",
             "type": "node",
             "request": "launch",

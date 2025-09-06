@@ -109,7 +109,7 @@ async def engine() -> AsyncGenerator[AsyncEngine, None]:
     test_db_url = settings.db_url
 
     # First ensure test database exists using default postgres connection
-    await ensure_test_database_exists()  # Use default postgres connection
+    await ensure_test_database_exists()
 
     # Create engine for testing
     engine = create_async_engine(test_db_url, echo=False)

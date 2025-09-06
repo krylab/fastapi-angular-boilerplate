@@ -28,8 +28,8 @@ export class Users {
    * @response `200` `UsersCurrentUserApiUsersMeGetData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  usersMe = (trigger?: Signal<any>, host?: string) => {
-    return httpResource<Types.UsersMeApiResult>(() => {
+  me = (trigger?: Signal<any>, host?: string) => {
+    return httpResource<Types.MeResult>(() => {
       if (!trigger?.()) return undefined;
 
       const url = host ? `${host}/api/users/me` : "/api/users/me";
@@ -52,11 +52,8 @@ export class Users {
    * @response `200` `UsersPatchCurrentUserApiUsersMePatchData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  usersMe = (
-    params: Signal<Types.UsersMeApiInput | undefined>,
-    host?: string,
-  ) => {
-    return httpResource<Types.UsersMeApiResult>(() => {
+  me = (params: Signal<Types.MeInput | undefined>, host?: string) => {
+    return httpResource<Types.MeResult>(() => {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
@@ -81,8 +78,11 @@ export class Users {
    * @response `200` `UsersUserApiUsersIdGetData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  usersId = (params: Signal<Types.UsersIdInput | undefined>, host?: string) => {
-    return httpResource<Types.UsersIdResult>(() => {
+  getUsersById = (
+    params: Signal<Types.GetUsersByIdInput | undefined>,
+    host?: string,
+  ) => {
+    return httpResource<Types.GetUsersByIdResult>(() => {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
@@ -107,8 +107,11 @@ export class Users {
    * @response `200` `UsersPatchUserApiUsersIdPatchData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  usersId = (params: Signal<Types.UsersIdInput | undefined>, host?: string) => {
-    return httpResource<Types.UsersIdResult>(() => {
+  patchUsersById = (
+    params: Signal<Types.PatchUsersByIdInput | undefined>,
+    host?: string,
+  ) => {
+    return httpResource<Types.PatchUsersByIdResult>(() => {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
@@ -134,8 +137,11 @@ export class Users {
    * @response `204` `UsersDeleteUserApiUsersIdDeleteData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  usersId = (params: Signal<Types.UsersIdInput | undefined>, host?: string) => {
-    return httpResource<Types.UsersIdResult>(() => {
+  deleteUsersById = (
+    params: Signal<Types.DeleteUsersByIdInput | undefined>,
+    host?: string,
+  ) => {
+    return httpResource<Types.DeleteUsersByIdResult>(() => {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 

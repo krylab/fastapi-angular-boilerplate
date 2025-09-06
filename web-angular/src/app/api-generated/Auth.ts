@@ -27,11 +27,11 @@ export class Auth {
    * @response `201` `RegisterRegisterApiAuthRegisterPostData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  authRegister = (
-    params: Signal<Types.AuthRegisterApiInput | undefined>,
+  register = (
+    params: Signal<Types.RegisterInput | undefined>,
     host?: string,
   ) => {
-    return httpResource<Types.AuthRegisterApiResult>(() => {
+    return httpResource<Types.RegisterResult>(() => {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
@@ -55,11 +55,11 @@ export class Auth {
    * @response `202` `ResetForgotPasswordApiAuthForgotPasswordPostData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  authForgotPassword = (
-    params: Signal<Types.AuthForgotPasswordInput | undefined>,
+  forgotPassword = (
+    params: Signal<Types.ForgotPasswordInput | undefined>,
     host?: string,
   ) => {
-    return httpResource<Types.AuthForgotPasswordResult>(() => {
+    return httpResource<Types.ForgotPasswordResult>(() => {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
@@ -85,11 +85,11 @@ export class Auth {
    * @response `200` `ResetResetPasswordApiAuthResetPasswordPostData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  authResetPassword = (
-    params: Signal<Types.AuthResetPasswordInput | undefined>,
+  resetPassword = (
+    params: Signal<Types.ResetPasswordInput | undefined>,
     host?: string,
   ) => {
-    return httpResource<Types.AuthResetPasswordResult>(() => {
+    return httpResource<Types.ResetPasswordResult>(() => {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
@@ -115,11 +115,11 @@ export class Auth {
    * @response `202` `VerifyRequestTokenApiAuthRequestVerifyTokenPostData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  authRequestVerifyToken = (
-    params: Signal<Types.AuthRequestVerifyTokenInput | undefined>,
+  requestVerifyToken = (
+    params: Signal<Types.RequestVerifyTokenInput | undefined>,
     host?: string,
   ) => {
-    return httpResource<Types.AuthRequestVerifyTokenResult>(() => {
+    return httpResource<Types.RequestVerifyTokenResult>(() => {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
@@ -145,11 +145,8 @@ export class Auth {
    * @response `200` `VerifyVerifyApiAuthVerifyPostData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  authVerify = (
-    params: Signal<Types.AuthVerifyInput | undefined>,
-    host?: string,
-  ) => {
-    return httpResource<Types.AuthVerifyResult>(() => {
+  verify = (params: Signal<Types.VerifyInput | undefined>, host?: string) => {
+    return httpResource<Types.VerifyResult>(() => {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
@@ -173,11 +170,11 @@ export class Auth {
    * @response `200` `AuthJwtLoginApiAuthJwtLoginPostData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  authJwt = (
-    params: Signal<Types.AuthJwtApiInput | undefined>,
+  loginJwt = (
+    params: Signal<Types.LoginJwtInput | undefined>,
     host?: string,
   ) => {
-    return httpResource<Types.AuthJwtApiResult>(() => {
+    return httpResource<Types.LoginJwtResult>(() => {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
@@ -202,8 +199,8 @@ export class Auth {
    * @response `200` `AuthJwtLogoutApiAuthJwtLogoutPostData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  authJwt = (trigger?: Signal<any>, host?: string) => {
-    return httpResource<Types.AuthJwtApiResult>(() => {
+  logoutJwt = (trigger?: Signal<any>, host?: string) => {
+    return httpResource<Types.LogoutJwtResult>(() => {
       if (!trigger?.()) return undefined;
 
       const url = host ? `${host}/api/auth/jwt/logout` : "/api/auth/jwt/logout";
@@ -226,11 +223,11 @@ export class Auth {
    * @response `204` `void` No Content
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  authCookie = (
-    params: Signal<Types.AuthCookieApiInput | undefined>,
+  loginCookie = (
+    params: Signal<Types.LoginCookieInput | undefined>,
     host?: string,
   ) => {
-    return httpResource<Types.AuthCookieApiResult>(() => {
+    return httpResource<Types.LoginCookieResult>(() => {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
@@ -258,8 +255,8 @@ export class Auth {
    * @response `204` `void` No Content
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  authCookie = (trigger?: Signal<any>, host?: string) => {
-    return httpResource<Types.AuthCookieApiResult>(() => {
+  logoutCookie = (trigger?: Signal<any>, host?: string) => {
+    return httpResource<Types.LogoutCookieResult>(() => {
       if (!trigger?.()) return undefined;
 
       const url = host
@@ -283,8 +280,8 @@ export class Auth {
    * @response `200` `OauthGoogleJwtAuthorizeApiAuthGoogleAuthorizeGetData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  authGoogle = (trigger?: Signal<any>, host?: string) => {
-    return httpResource<Types.AuthGoogleApiResult>(() => {
+  authorize = (trigger?: Signal<any>, host?: string) => {
+    return httpResource<Types.AuthorizeResult>(() => {
       if (!trigger?.()) return undefined;
 
       const url = host
@@ -308,11 +305,11 @@ export class Auth {
    * @response `200` `OauthGoogleJwtCallbackApiAuthGoogleCallbackGetData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  authGoogle = (
-    params: Signal<Types.AuthGoogleApiInput | undefined>,
+  callback = (
+    params: Signal<Types.CallbackInput | undefined>,
     host?: string,
   ) => {
-    return httpResource<Types.AuthGoogleApiResult>(() => {
+    return httpResource<Types.CallbackResult>(() => {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 

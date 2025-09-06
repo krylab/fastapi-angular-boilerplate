@@ -19,7 +19,7 @@ from .schemas import (
     TierUpdate,
 )
 
-router = APIRouter()
+router = APIRouter(tags=["plans"])
 
 
 # Tier routes

@@ -2,17 +2,21 @@ from typing import Annotated, AsyncGenerator
 
 from fastapi import Depends
 from lelab_common import Settings
-from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
 
 from .settings import DatabaseSettings
 
+_engine: AsyncEngine | None = None
 
-def get_database_engine(settings: Settings):
+
+def get_database_engine(settings: Settings) -> AsyncEngine:
     """Get database engine with settings from dependency injection."""
     if not isinstance(settings, DatabaseSettings):
         raise NotImplementedError("The application settings is not inherited from DatabaseSettings")
-
-    return create_async_engine(settings.db_url, echo=False, future=True)
+    global _engine
+    if _engine is None:
+        _engine = create_async_engine(settings.db_url, echo=False, future=True)
+    return _engine
 
 
 _async_sessionmaker: async_sessionmaker[AsyncSession] | None = None

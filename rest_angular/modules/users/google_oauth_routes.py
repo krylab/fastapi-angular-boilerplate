@@ -49,15 +49,20 @@ class CustomGoogleOAuth2(GoogleOAuth2):
         return await super().get_id_email(token["access_token"])
 
 
+_google_oauth_client: CustomGoogleOAuth2 | None = None
+
+
 def get_google_oauth_client(settings: Settings) -> CustomGoogleOAuth2:
     """Get Google OAuth client with settings from dependency injection."""
-    if isinstance(settings, UserSettings):
-        return CustomGoogleOAuth2(
+    if not isinstance(settings, UserSettings):
+        raise NotImplementedError("The application settings is not inherited from UserSettings")
+    global _google_oauth_client
+    if _google_oauth_client is None:
+        _google_oauth_client = CustomGoogleOAuth2(
             settings.google_oauth_client_id,
             settings.google_oauth_client_secret,
         )
-    else:
-        raise NotImplementedError("The application settings is not inherited from UserSettings")
+    return _google_oauth_client
 
 
 GoogleOAuth2Client = Annotated[CustomGoogleOAuth2, Depends(get_google_oauth_client)]

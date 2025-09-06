@@ -3,7 +3,7 @@ import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validator
 import { Router } from '@angular/router';
 import { environment } from '../../../../environments/environment';
 import { Auth } from '../../../api-generated/Auth';
-import { RegisterAuthInput } from '../../../api-generated/data-contracts';
+import { RegisterInput } from '../../../api-generated/data-contracts';
 
 @Component({
   selector: 'app-register',
@@ -12,7 +12,7 @@ import { RegisterAuthInput } from '../../../api-generated/data-contracts';
 })
 export class RegisterComponent implements OnInit {
   registerForm!: FormGroup;
-  userCreateSignal = signal<RegisterAuthInput | undefined>(undefined);
+  userCreateSignal = signal<RegisterInput | undefined>(undefined);
   registrationSuccess = false;
 
   private fb = inject(FormBuilder);
@@ -99,7 +99,7 @@ export class RegisterComponent implements OnInit {
   onSubmit(): void {
     if (this.registerForm.valid) {
       const formValue = this.registerForm.value;
-      const userData: RegisterAuthInput = {
+      const userData: RegisterInput = {
         email: formValue.email,
         password: formValue.password,
         is_active: true,
