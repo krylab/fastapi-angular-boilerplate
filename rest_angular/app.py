@@ -96,14 +96,6 @@ def create_app() -> FastAPI:
             # For all other routes, serve index.html (Angular SPA routing)
             # This enables Angular's client-side routing
             return FileResponse(index_file)
-    else:
-        # Fallback route when Angular is not built
-        @app.get("/{full_path:path}")
-        async def angular_not_built(full_path: str):
-            """
-            Fallback when Angular app is not built.
-            """
-            return {"detail": "Angular app not built. Run with BUILD_ANGULAR=true in production."}
 
     """ Dependency overrides """
     app.dependency_overrides[get_configuration] = lambda: settings
