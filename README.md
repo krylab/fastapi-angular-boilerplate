@@ -190,6 +190,43 @@ uv run alembic revision --autogenerate
 uv run alembic revision
 ```
 
+## Documentation
+
+This project includes comprehensive documentation built with MkDocs:
+
+```bash
+# Install documentation dependencies
+uv sync --group docs
+
+# Start the documentation server
+uv run mkdocs serve
+# Or use the convenience script
+./scripts/docs.sh serve
+
+# Build documentation
+uv run mkdocs build
+# Or use the convenience script
+./scripts/docs.sh build
+```
+
+The documentation will be available at http://localhost:8001 and includes:
+
+-   **Getting Started Guide** - Installation, configuration, and running instructions
+-   **Backend Documentation** - FastAPI architecture and API reference
+-   **Frontend Documentation** - Angular application structure and components
+-   **Deployment Guide** - Docker, GitHub Pages, and production deployment instructions
+-   **Development Guide** - Testing, contributing, and development workflows
+
+### GitHub Pages Deployment
+
+The documentation is automatically deployed to GitHub Pages via GitHub Actions:
+
+-   **Automatic deployment** when pushing to `main` branch
+-   **Pull request validation** to prevent broken builds
+-   **Custom domain support** for professional documentation sites
+
+Configure GitHub Pages in your repository settings and push to `main` to deploy.
+
 ## Pre-commit Hooks
 
 Set up pre-commit hooks to ensure code quality before each commit after running `uv sync`:
