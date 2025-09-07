@@ -80,7 +80,16 @@ docker run -d \
 
 ### Option 2: Docker Setup
 
-Use Docker Compose to start all services together. See the [Docker](#docker) section below for details.
+Use Docker Compose to start all services together:
+
+```bash
+# Start all services (now exposes port 8000 by default)
+docker compose up -d
+```
+
+The application will be available at http://localhost:8000.
+
+See the [Docker](#docker) section below for more details.
 
 ## Configuration
 
@@ -124,6 +133,8 @@ uv run -m rest_angular
 This will start the FastAPI server on the configured host (default: http://localhost:8000).
 
 Visit `http://localhost:8000/api/docs` for complete API documentation with interactive Swagger UI.
+
+**Note**: When using Docker Compose, the application is now exposed on port 8000 by default, making it directly accessible at http://localhost:8000.
 
 ## Running the Angular Frontend
 
@@ -300,27 +311,29 @@ This will:
 
 ### Development Mode
 
-For development (faster builds, Angular served separately):
+For development:
 
 ```bash
-# Start backend only (no Angular build required)
+# Start backend with port 8000 exposed (default behavior)
 docker compose up --build
 ```
 
-In development, run Angular separately:
+The application will be available at http://localhost:8000.
+
+For separate Angular development:
 
 ```bash
 cd web-angular
 npm start  # Serves on http://localhost:4200
 ```
 
-If you want to develop in docker with autoreload and exposed ports add `-f deploy/docker compose.dev.yml` to your docker command:
+For development with additional features (autoreload, volume mounts):
 
 ```bash
-docker compose -f docker compose.yml -f deploy/docker compose.dev.yml --project-directory . up --build
+docker compose -f docker-compose.yml -f deploy/docker-compose.dev.yml --project-directory . up --build
 ```
 
-This command exposes the web application on port 8000, mounts current directory and enables autoreload.
+This command adds development-specific features like autoreload and volume mounting.
 
 But you have to rebuild image every time you modify `uv.lock` or `pyproject.toml` with this command:
 

@@ -556,7 +556,7 @@ if index_file.exists():
 npm start                    # Angular dev server on :4200
 uv run -m rest_angular      # FastAPI on :8000
 
-# Production build
+# Production build with Docker (port 8000 exposed by default)
 npm run build:prod          # Builds to ../publish/browser/
 docker compose up --build   # FastAPI serves both API and frontend on :8000
 ```

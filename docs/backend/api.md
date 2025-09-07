@@ -10,6 +10,8 @@ The API includes automatically generated interactive documentation:
 -   **ReDoc**: http://localhost:8000/api/redoc
 -   **OpenAPI Schema**: http://localhost:8000/api/openapi.json
 
+**Note**: When using Docker Compose, the API is now accessible on port 8000 by default.
+
 ## Authentication
 
 Most API endpoints require authentication using JWT tokens.

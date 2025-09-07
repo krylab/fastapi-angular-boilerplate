@@ -86,9 +86,11 @@ Choose one of the following options:
 === "Docker Compose (Recommended)"
 
     ```bash
-    # Start all services
+    # Start all services (now exposes port 8000 by default)
     docker compose up -d
     ```
+
+    The application will be available at http://localhost:8000.
 
 === "Individual Docker Containers"
 
@@ -149,6 +151,8 @@ uv run alembic upgrade head
     - **Application**: http://localhost:8000
     - **API Documentation**: http://localhost:8000/api/docs
     - **OpenAPI Schema**: http://localhost:8000/api/openapi.json
+
+    **Note**: Docker Compose now exposes port 8000 by default, making the application directly accessible.
 
 === "Frontend"
 

@@ -1,10 +1,9 @@
 services:
   api:
-    ports:
-      # Exposes application port.
-      - "8000:8000"
     build:
       context: .
+    env_file:
+      - .env
     volumes:
       # Adds current directory as volume.
       - .:/app/src/

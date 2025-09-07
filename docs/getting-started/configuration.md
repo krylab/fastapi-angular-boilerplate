@@ -6,12 +6,12 @@ This application uses environment variables for configuration, following the [12
 
 ### Core Application Settings
 
-| Variable      | Default   | Description                                     |
-| ------------- | --------- | ----------------------------------------------- |
-| `ENVIRONMENT` | `dev`     | Application environment (`dev`, `prod`, `test`) |
-| `RELOAD`      | `False`   | Enable auto-reload in development               |
-| `PORT`        | `8000`    | Port for the FastAPI server                     |
-| `HOST`        | `0.0.0.0` | Host address to bind the server                 |
+| Variable      | Default   | Description                                                        |
+| ------------- | --------- | ------------------------------------------------------------------ |
+| `ENVIRONMENT` | `dev`     | Application environment (`dev`, `prod`, `test`)                    |
+| `RELOAD`      | `False`   | Enable auto-reload in development                                  |
+| `PORT`        | `8000`    | Port for the FastAPI server (exposed by default in Docker Compose) |
+| `HOST`        | `0.0.0.0` | Host address to bind the server                                    |
 
 ### Database Configuration
 

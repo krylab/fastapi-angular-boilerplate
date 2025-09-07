@@ -23,6 +23,9 @@ COPY publish/browser/ ./rest_angular/static/
 # Set the PATH to include the virtual environment's bin directory
 ENV PATH="/app/.venv/bin:$PATH"
 
+# Set HOST to bind all interfaces for Docker container access
+ENV HOST="0.0.0.0"
+
 # Expose the port your application listens on
 EXPOSE 8000
 

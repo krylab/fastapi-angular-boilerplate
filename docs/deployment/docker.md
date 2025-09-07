@@ -16,13 +16,16 @@ The application provides multiple Docker configurations:
 ### Development Environment
 
 ```bash
-# Start all services with hot-reload
+# Start all services (port 8000 now exposed by default)
+docker compose up --build
+
+# For enhanced development with hot-reload:
 docker compose -f docker-compose.yml -f deploy/docker-compose.dev.yml up --build
 
 # Services will be available at:
-# - Frontend: http://localhost:4200
 # - Backend API: http://localhost:8000
 # - API Docs: http://localhost:8000/api/docs
+# - Frontend (if running separately): http://localhost:4200
 ```
 
 ### Production Environment
@@ -510,10 +513,10 @@ services:
 ### Development
 
 ```bash
-# Start development environment
-make dev-up
+# Start development environment (port 8000 exposed by default)
+docker compose up --build
 
-# Or manually
+# Or with enhanced development features
 docker compose -f docker-compose.yml -f deploy/docker-compose.dev.yml up --build
 
 # Run database migrations

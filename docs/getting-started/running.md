@@ -64,7 +64,15 @@ Run both backend and frontend simultaneously:
 === "Using Docker Compose"
 
     ```bash
-    # Development mode with hot-reload
+    # Start with port 8000 exposed (default behavior)
+    docker compose up --build
+    ```
+
+    The application will be available at http://localhost:8000.
+
+    For development with additional features (hot-reload, volume mounts):
+
+    ```bash
     docker compose -f docker-compose.yml -f deploy/docker-compose.dev.yml up --build
     ```
 
@@ -127,6 +135,8 @@ docker compose up --build -d
 
 The production setup serves both the Angular frontend and FastAPI backend from a single container at http://localhost:8000.
 
+**Note**: Docker Compose now exposes port 8000 by default, making the application directly accessible without additional configuration.
+
 ## Testing Mode
 
 ### Backend Testing
@@ -172,10 +182,13 @@ docker compose -f docker-compose.yml -f docker-compose.test.yml run --build --rm
 ### Development with Docker
 
 ```bash
-# Start development environment
+# Start development environment (port 8000 exposed by default)
+docker compose up --build
+
+# For enhanced development features:
 docker compose -f docker-compose.yml -f deploy/docker-compose.dev.yml up --build
 
-# This configuration includes:
+# Enhanced development configuration includes:
 # - Hot-reload for backend
 # - Volume mounts for source code
 # - Debug ports exposed
