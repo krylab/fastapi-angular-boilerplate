@@ -21,7 +21,7 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name PlansTiers
+   * @name Tiers
    * @summary Get Tiers
    * @request GET:/api/plans/tiers
    * @response `200` `GetTiersApiPlansTiersGetData` Successful Response
@@ -44,7 +44,7 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name PlansTiers
+   * @name Tiers
    * @summary Create Tier
    * @request POST:/api/plans/tiers
    * @response `201` `CreateTierApiPlansTiersPostData` Successful Response
@@ -72,7 +72,7 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name PlansTiers
+   * @name Tiers
    * @summary Get Tier
    * @request GET:/api/plans/tiers/{tier_id}
    * @response `200` `GetTierApiPlansTiersTierIdGetData` Successful Response
@@ -102,7 +102,7 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name PlansTiers
+   * @name Tiers
    * @summary Update Tier
    * @request PUT:/api/plans/tiers/{tier_id}
    * @response `200` `UpdateTierApiPlansTiersTierIdPutData` Successful Response
@@ -133,7 +133,7 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name PlansTiers
+   * @name Tiers
    * @summary Delete Tier
    * @request DELETE:/api/plans/tiers/{tier_id}
    * @response `204` `DeleteTierApiPlansTiersTierIdDeleteData` Successful Response
@@ -163,7 +163,7 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name PlansRateLimits
+   * @name RateLimits
    * @summary Get Rate Limits
    * @request GET:/api/plans/rate-limits
    * @response `200` `GetRateLimitsApiPlansRateLimitsGetData` Successful Response
@@ -188,7 +188,7 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name PlansRateLimits
+   * @name RateLimits
    * @summary Create Rate Limit
    * @request POST:/api/plans/rate-limits
    * @response `201` `CreateRateLimitApiPlansRateLimitsPostData` Successful Response
@@ -227,7 +227,7 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name PlansRateLimits
+   * @name RateLimits
    * @summary Get Rate Limit
    * @request GET:/api/plans/rate-limits/{rate_limit_id}
    * @response `200` `GetRateLimitApiPlansRateLimitsRateLimitIdGetData` Successful Response
@@ -257,7 +257,7 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name PlansRateLimits
+   * @name RateLimits
    * @summary Update Rate Limit
    * @request PUT:/api/plans/rate-limits/{rate_limit_id}
    * @response `200` `UpdateRateLimitApiPlansRateLimitsRateLimitIdPutData` Successful Response
@@ -288,7 +288,7 @@ export class Plans {
    * No description
    *
    * @tags plans
-   * @name PlansRateLimits
+   * @name RateLimits
    * @summary Delete Rate Limit
    * @request DELETE:/api/plans/rate-limits/{rate_limit_id}
    * @response `204` `DeleteRateLimitApiPlansRateLimitsRateLimitIdDeleteData` Successful Response

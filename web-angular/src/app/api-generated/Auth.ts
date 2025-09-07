@@ -21,7 +21,7 @@ export class Auth {
    * No description
    *
    * @tags auth
-   * @name AuthRegister
+   * @name Register
    * @summary Register:Register
    * @request POST:/api/auth/register
    * @response `201` `RegisterRegisterApiAuthRegisterPostData` Successful Response
@@ -49,7 +49,7 @@ export class Auth {
    * No description
    *
    * @tags auth
-   * @name AuthForgotPassword
+   * @name ForgotPassword
    * @summary Reset:Forgot Password
    * @request POST:/api/auth/forgot-password
    * @response `202` `ResetForgotPasswordApiAuthForgotPasswordPostData` Successful Response
@@ -79,7 +79,7 @@ export class Auth {
    * No description
    *
    * @tags auth
-   * @name AuthResetPassword
+   * @name ResetPassword
    * @summary Reset:Reset Password
    * @request POST:/api/auth/reset-password
    * @response `200` `ResetResetPasswordApiAuthResetPasswordPostData` Successful Response
@@ -109,7 +109,7 @@ export class Auth {
    * No description
    *
    * @tags auth
-   * @name AuthRequestVerifyToken
+   * @name RequestVerifyToken
    * @summary Verify:Request-Token
    * @request POST:/api/auth/request-verify-token
    * @response `202` `VerifyRequestTokenApiAuthRequestVerifyTokenPostData` Successful Response
@@ -139,7 +139,7 @@ export class Auth {
    * No description
    *
    * @tags auth
-   * @name AuthVerify
+   * @name Verify
    * @summary Verify:Verify
    * @request POST:/api/auth/verify
    * @response `200` `VerifyVerifyApiAuthVerifyPostData` Successful Response
@@ -164,7 +164,7 @@ export class Auth {
    * No description
    *
    * @tags auth
-   * @name AuthJwt
+   * @name Login
    * @summary Auth:Jwt.Login
    * @request POST:/api/auth/jwt/login
    * @response `200` `AuthJwtLoginApiAuthJwtLoginPostData` Successful Response
@@ -192,7 +192,7 @@ export class Auth {
    * No description
    *
    * @tags auth
-   * @name AuthJwt
+   * @name Logout
    * @summary Auth:Jwt.Logout
    * @request POST:/api/auth/jwt/logout
    * @secure
@@ -216,7 +216,7 @@ export class Auth {
    * No description
    *
    * @tags auth
-   * @name AuthCookie
+   * @name Login
    * @summary Auth:Cookie.Login
    * @request POST:/api/auth/cookie/login
    * @response `200` `AuthCookieLoginApiAuthCookieLoginPostData` Successful Response
@@ -247,7 +247,7 @@ export class Auth {
    * No description
    *
    * @tags auth
-   * @name AuthCookie
+   * @name Logout
    * @summary Auth:Cookie.Logout
    * @request POST:/api/auth/cookie/logout
    * @secure
@@ -274,7 +274,7 @@ export class Auth {
    * @description Custom Google OAuth authorize endpoint that uses scopes from config.
    *
    * @tags auth
-   * @name AuthGoogle
+   * @name Authorize
    * @summary Oauth:Google.Jwt.Authorize
    * @request GET:/api/auth/google/authorize
    * @response `200` `OauthGoogleJwtAuthorizeApiAuthGoogleAuthorizeGetData` Successful Response
@@ -299,7 +299,7 @@ export class Auth {
    * @description Custom Google OAuth callback that handles id_token
    *
    * @tags auth
-   * @name AuthGoogle
+   * @name Callback
    * @summary Oauth:Google.Jwt.Callback
    * @request GET:/api/auth/google/callback
    * @response `200` `OauthGoogleJwtCallbackApiAuthGoogleCallbackGetData` Successful Response

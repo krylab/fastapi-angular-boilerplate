@@ -1,111 +1,26 @@
 <%
-const { config, route, utils } = it;
+const { config, route, utils, routes } = it;
 const { _, formatDescription, fmtToJSDocLine, pascalCase, require } = utils;
 const { raw, request, routeName, path, method } = route;
 
-// Helper function to convert kebab-case to camelCase
-const toCamelCase = (str) => {
-  return str.replace(/-([a-z])/g, (match, letter) => letter.toUpperCase());
-};
+// Load dynamic naming utilities
+const namingUtils = includeFile("./naming-utils", { utils });
 
-// Create a simplified method name from the route (matching procedure-call.ejs logic)
-const createSimpleMethodName = (routeName, path, method) => {
-  // Add null checks for safety
-  if (!path || !method) {
-    return 'unknownMethod';
-  }
-  
-  // Split path into segments and filter out empty and parameter segments
-  const pathSegments = path.split('/').filter(p => p && !p.startsWith('{'));
-  
-  if (pathSegments.length >= 2) {
-    // Handle nested paths like /auth/jwt/login
-    if (pathSegments.length > 3) {
-      // For paths like /auth/jwt/login, create 'loginJwt'
-      const subResource = toCamelCase(pathSegments[2]);
-      const finalAction = toCamelCase(pathSegments[3] || method.toLowerCase());
-      return `${finalAction}${_.upperFirst(subResource)}`;
+// Collect all routes for analysis
+const allRoutes = [];
+if (routes && routes.combined) {
+  routes.combined.forEach(group => {
+    if (group.routes) {
+      allRoutes.push(...group.routes);
     }
-    
-    // Handle paths like /auth/forgot-password or /auth/register
-    const resource = pathSegments[1]; // e.g., 'auth'
-    let action = pathSegments[2]; // e.g., 'forgot-password' or 'register'
-    
-    if (!action) {
-      // If no action specified, use method + resource (e.g., 'postAuth')
-      return `${method.toLowerCase()}${_.upperFirst(toCamelCase(resource))}`;
-    }
-    
-    // Convert action to camelCase and create method name
-    const camelAction = toCamelCase(action);
-    
-    // Create the final method name: action + Resource (e.g., 'forgotPasswordAuth')
-    return `${camelAction}${_.upperFirst(toCamelCase(resource))}`;
-  }
-  
-  // Fallback: if we have a routeName, use it, otherwise create from path
-  if (routeName && routeName !== '') {
-    const words = routeName.split(/(?=[A-Z])/);
-    const uniqueWords = [...new Set(words.map(w => w.toLowerCase()))];
-    const cleanName = uniqueWords.length > 2 ? uniqueWords.slice(0, 2).join('') + _.upperFirst(uniqueWords[uniqueWords.length - 1]) : routeName;
-    return toCamelCase(cleanName);
-  } else {
-    // Create a fallback name from the path
-    const cleanPath = path.replace(/[^a-zA-Z0-9]/g, '');
-    return `${method.toLowerCase()}${_.upperFirst(toCamelCase(cleanPath))}`;
-  }
-};
-
-
-
-// Generate method name directly from raw.route and request.method
-let simpleMethodName = 'unknownMethod';
-
-if (raw.route && request.method) {
-  // Split path into segments and filter out empty and parameter segments
-  const pathSegments = raw.route.split('/').filter(p => p && !p.startsWith('{'));
-  
-  if (pathSegments.length >= 1) {
-    const resource = pathSegments[0]; // e.g., 'redis', 'users', 'auth'
-    let action = pathSegments[1]; // e.g., 'get', 'set', 'register'
-    
-    if (!action) {
-      // If no action specified, use method + resource (e.g., 'getUsers')
-      simpleMethodName = `${request.method.toLowerCase()}${_.upperFirst(toCamelCase(resource))}`;
-    } else {
-      // Convert action to camelCase
-      const camelAction = toCamelCase(action);
-      const lowerMethod = request.method.toLowerCase();
-      
-      // Check if action already contains the method name
-      if (camelAction.toLowerCase().includes(lowerMethod)) {
-        // If action already includes method, just use action (e.g., 'get' from '/redis/get')
-        simpleMethodName = camelAction;
-      } else {
-        // For routes like /users/me where the action doesn't contain the method,
-        // we need to include the method to avoid conflicts between GET /users/me and PATCH /users/me
-        const commonActions = ['me', 'profile', 'settings', 'current'];
-        if (commonActions.includes(camelAction.toLowerCase())) {
-          simpleMethodName = `${lowerMethod}${_.upperFirst(camelAction)}`;
-        } else {
-          // Handle nested paths like /auth/jwt/login or /auth/google/callback  
-          if (pathSegments.length > 2) {
-            const subResource = toCamelCase(pathSegments[1]); // e.g., 'jwt', 'google'
-            const finalAction = toCamelCase(pathSegments[2] || lowerMethod); // e.g., 'login', 'callback'
-            simpleMethodName = `${subResource}${_.upperFirst(finalAction)}`;
-          } else {
-            // Create the final method name: action (e.g., 'register', 'forgotPassword')
-            simpleMethodName = camelAction;
-          }
-        }
-      }
-    }
-  } else {
-    // Fallback: create a name from the path
-    const cleanPath = raw.route.replace(/[^a-zA-Z0-9]/g, '');
-    simpleMethodName = `${request.method.toLowerCase()}${_.upperFirst(toCamelCase(cleanPath))}`;
-  }
+  });
 }
+
+// Get dynamic naming for this route
+const routeNaming = namingUtils.getRouteNaming(route, allRoutes, utils);
+
+// Use dynamic naming from the analysis
+const simpleMethodName = routeNaming.methodName;
 
 const jsDocDescription = raw.description ?
     ` * @description ${formatDescription(raw.description, true)}` :

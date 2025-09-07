@@ -1,0 +1,248 @@
+<%
+// ==============================================================================
+// Dynamic Route Naming Utilities
+// ==============================================================================
+// This file contains the core logic for generating method names and type names
+// dynamically based on route analysis, following these rules:
+//
+// METHOD NAMING:
+// - If last segment of path is unique across routes: use last segment as method name
+// - If last segment conflicts:
+//   - Routes with path params: getAbcByPathParamX
+//   - Routes with different HTTP methods: getABC, postABC
+//
+// TYPE NAMING: 
+// - Use method name as base (e.g., getUser -> GetUserInput, GetUserResult)
+// - When conflicts exist between tags/groups: add tag/group (e.g., getMeUser, getMeProfile)
+// ==============================================================================
+
+// Helper function to convert kebab-case to camelCase
+const toCamelCase = (str) => {
+  return str.replace(/-([a-z])/g, (match, letter) => letter.toUpperCase());
+};
+
+// Helper function to convert camelCase to PascalCase
+const toPascalCase = (str) => {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+// Extract path segments excluding parameters
+const getPathSegments = (path) => {
+  return path.split('/').filter(p => p && !p.startsWith('{'));
+};
+
+// Extract path parameters
+const getPathParams = (path) => {
+  const matches = path.match(/\{([^}]+)\}/g);
+  return matches ? matches.map(m => m.slice(1, -1)) : [];
+};
+
+// Get the last meaningful segment from a path
+const getLastSegment = (path) => {
+  const segments = getPathSegments(path);
+  return segments.length > 0 ? segments[segments.length - 1] : null;
+};
+
+// Get the tag/group from the route
+const getRouteTag = (route) => {
+  if (route.raw?.tags && route.raw.tags.length > 0) {
+    return route.raw.tags[0];
+  }
+  
+  // Fallback to first path segment as group
+  const segments = getPathSegments(route.raw?.route || '');
+  return segments.length > 0 ? segments[0] : 'unknown';
+};
+
+// Analyze all routes to detect naming conflicts
+const analyzeAllRoutes = (allRoutes, utils) => {
+  const { _ } = utils;
+  
+  if (!allRoutes || allRoutes.length === 0) {
+    return { lastSegmentConflicts: {}, methodNameConflicts: {}, typeNameConflicts: {} };
+  }
+
+  // Group routes by last segment
+  const routesByLastSegment = {};
+  allRoutes.forEach(route => {
+    const lastSegment = getLastSegment(route.raw?.route || '');
+    if (lastSegment) {
+      if (!routesByLastSegment[lastSegment]) {
+        routesByLastSegment[lastSegment] = [];
+      }
+      routesByLastSegment[lastSegment].push(route);
+    }
+  });
+
+  // Find last segment conflicts
+  const lastSegmentConflicts = {};
+  Object.keys(routesByLastSegment).forEach(segment => {
+    if (routesByLastSegment[segment].length > 1) {
+      lastSegmentConflicts[segment] = routesByLastSegment[segment];
+    }
+  });
+
+  // Generate method names for all routes and find conflicts
+  const methodNames = {};
+  const routeToMethodName = new Map();
+  
+  allRoutes.forEach(route => {
+    const methodName = generateMethodName(route, lastSegmentConflicts, utils);
+    routeToMethodName.set(route, methodName);
+    
+    if (!methodNames[methodName]) {
+      methodNames[methodName] = [];
+    }
+    methodNames[methodName].push(route);
+  });
+
+  // Find method name conflicts
+  const methodNameConflicts = {};
+  Object.keys(methodNames).forEach(methodName => {
+    if (methodNames[methodName].length > 1) {
+      methodNameConflicts[methodName] = methodNames[methodName];
+    }
+  });
+
+  // Generate type names and find conflicts
+  const typeNames = {};
+  allRoutes.forEach(route => {
+    const methodName = routeToMethodName.get(route);
+    const pascalMethodName = toPascalCase(methodName);
+    
+    if (!typeNames[pascalMethodName]) {
+      typeNames[pascalMethodName] = [];
+    }
+    typeNames[pascalMethodName].push(route);
+  });
+
+  const typeNameConflicts = {};
+  Object.keys(typeNames).forEach(typeName => {
+    if (typeNames[typeName].length > 1) {
+      typeNameConflicts[typeName] = typeNames[typeName];
+    }
+  });
+
+  return { 
+    lastSegmentConflicts, 
+    methodNameConflicts, 
+    typeNameConflicts,
+    routeToMethodName
+  };
+};
+
+// Generate method name for a single route
+const generateMethodName = (route, lastSegmentConflicts, utils) => {
+  const { _ } = utils;
+  const path = route.raw?.route || '';
+  const method = route.raw?.method?.toLowerCase() || 'get';
+  const lastSegment = getLastSegment(path);
+  
+  if (!lastSegment) {
+    return `${method}Unknown`;
+  }
+
+  const camelLastSegment = toCamelCase(lastSegment);
+  
+  // Rule 1: If last segment is unique, use it directly
+  if (!lastSegmentConflicts[lastSegment]) {
+    return camelLastSegment;
+  }
+
+  // Rule 2: Handle conflicts based on path parameters and HTTP methods
+  const conflictingRoutes = lastSegmentConflicts[lastSegment];
+  const currentHasParams = getPathParams(path).length > 0;
+  const otherRoutesWithParams = conflictingRoutes.filter(r => 
+    r !== route && getPathParams(r.raw?.route || '').length > 0
+  );
+  const otherRoutesWithoutParams = conflictingRoutes.filter(r => 
+    r !== route && getPathParams(r.raw?.route || '').length === 0
+  );
+
+  // Rule 2a: If current route has path params and others don't (or vice versa)
+  if (currentHasParams && otherRoutesWithoutParams.length > 0) {
+    const pathParams = getPathParams(path);
+    const paramName = pathParams[0]; // Use first parameter
+    const camelParamName = toCamelCase(paramName.replace(/_/g, '-'));
+    return `${method}${toPascalCase(camelLastSegment)}By${toPascalCase(camelParamName)}`;
+  }
+
+  // Rule 2b: If no path param differentiation, check HTTP method conflicts
+  const sameMethodRoutes = conflictingRoutes.filter(r => 
+    r !== route && r.raw?.method?.toLowerCase() === method
+  );
+  const differentMethodRoutes = conflictingRoutes.filter(r => 
+    r !== route && r.raw?.method?.toLowerCase() !== method
+  );
+
+  if (differentMethodRoutes.length > 0) {
+    return `${method}${toPascalCase(camelLastSegment)}`;
+  }
+
+  // Rule 2c: Same method, same segment - use context from path
+  const segments = getPathSegments(path);
+  if (segments.length >= 2) {
+    const contextSegment = segments[segments.length - 2];
+    const camelContext = toCamelCase(contextSegment);
+    return `${camelLastSegment}${toPascalCase(camelContext)}`;
+  }
+
+  // Fallback: use HTTP method prefix
+  return `${method}${toPascalCase(camelLastSegment)}`;
+};
+
+// Generate type names with conflict resolution
+const generateTypeNames = (route, methodName, typeNameConflicts, utils) => {
+  const { _ } = utils;
+  const pascalMethodName = toPascalCase(methodName);
+  
+  // If no conflicts, use simple names
+  if (!typeNameConflicts[pascalMethodName]) {
+    return {
+      inputTypeName: `${pascalMethodName}Input`,
+      resultTypeName: `${pascalMethodName}Result`
+    };
+  }
+
+  // Handle conflicts by adding tag/group context
+  const tag = getRouteTag(route);
+  const camelTag = toCamelCase(tag);
+  const pascalTag = toPascalCase(camelTag);
+
+  return {
+    inputTypeName: `${pascalMethodName}${pascalTag}Input`,
+    resultTypeName: `${pascalMethodName}${pascalTag}Result`
+  };
+};
+
+// Main function to get all naming for a route
+const getRouteNaming = (route, allRoutes, utils) => {
+  const analysis = analyzeAllRoutes(allRoutes, utils);
+  const methodName = generateMethodName(route, analysis.lastSegmentConflicts, utils);
+  const typeNames = generateTypeNames(route, methodName, analysis.typeNameConflicts, utils);
+
+  return {
+    methodName,
+    inputTypeName: typeNames.inputTypeName,
+    resultTypeName: typeNames.resultTypeName,
+    analysis // Include analysis for debugging
+  };
+};
+
+// Export the functions for use in other templates
+const namingUtils = {
+  toCamelCase,
+  toPascalCase,
+  getPathSegments,
+  getPathParams,
+  getLastSegment,
+  getRouteTag,
+  analyzeAllRoutes,
+  generateMethodName,
+  generateTypeNames,
+  getRouteNaming
+};
+
+// Return the utils object for inclusion
+return namingUtils;
+%>

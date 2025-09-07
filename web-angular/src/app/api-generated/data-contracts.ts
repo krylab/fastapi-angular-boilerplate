@@ -451,32 +451,32 @@ export type PatchMeInput = UserUpdate;
 /** Result type for patchMe method */
 export type PatchMeResult = UsersPatchCurrentUserApiUsersMePatchData;
 
-/** Input type for getUsersById method */
-export type GetUsersByIdInput = {
+/** Input type for getUsers method */
+export type GetUsersInput = {
   /** id */
   id: string;
 };
 
-/** Result type for getUsersById method */
-export type GetUsersByIdResult = UsersUserApiUsersIdGetData;
+/** Result type for getUsers method */
+export type GetUsersResult = UsersUserApiUsersIdGetData;
 
-/** Input type for patchUsersById method */
-export type PatchUsersByIdInput = {
+/** Input type for patchUsers method */
+export type PatchUsersInput = {
   /** id */
   id: string;
 } & UserUpdate;
 
-/** Result type for patchUsersById method */
-export type PatchUsersByIdResult = UsersPatchUserApiUsersIdPatchData;
+/** Result type for patchUsers method */
+export type PatchUsersResult = UsersPatchUserApiUsersIdPatchData;
 
-/** Input type for deleteUsersById method */
-export type DeleteUsersByIdInput = {
+/** Input type for deleteUsers method */
+export type DeleteUsersInput = {
   /** id */
   id: string;
 };
 
-/** Result type for deleteUsersById method */
-export type DeleteUsersByIdResult = UsersDeleteUserApiUsersIdDeleteData;
+/** Result type for deleteUsers method */
+export type DeleteUsersResult = UsersDeleteUserApiUsersIdDeleteData;
 
 /** Input type for getTiers method */
 export type GetTiersInput = void;

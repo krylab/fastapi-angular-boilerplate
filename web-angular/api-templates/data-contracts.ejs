@@ -2,244 +2,18 @@
 const { modelTypes, utils, config, routes } = it;
 const { formatDescription, require, _, Ts } = utils;
 
-// Include the dynamic naming logic directly here
-// Helper function to convert kebab-case to camelCase
-const toCamelCase = (str) => {
-  return str.replace(/-([a-z])/g, (match, letter) => letter.toUpperCase());
-};
+// Load dynamic naming utilities
+const namingUtils = includeFile("./naming-utils", { utils });
 
-// Step 1: Collect and analyze all routes to detect conflicts
-const analyzeRoutes = (routes, utils) => {
-  const { _ } = utils;
-  
-  if (!routes || !routes.combined) {
-    return { routesByClass: {}, conflictAnalysis: {}, allRoutes: [] };
-  }
-
-  // Collect all routes first
-  const allRoutes = [];
+// Collect all routes for analysis
+const allRoutes = [];
+if (routes && routes.combined) {
   routes.combined.forEach(group => {
     if (group.routes) {
       allRoutes.push(...group.routes);
     }
   });
-
-  // Group routes by class/module
-  const routesByClass = {};
-  allRoutes.forEach(route => {
-    // Determine class name from path
-    let className = 'Unknown';
-    if (route.raw?.route) {
-      const pathSegments = route.raw.route.split('/').filter(p => p && !p.startsWith('{'));
-      if (pathSegments.length > 0) {
-        className = _.upperFirst(pathSegments[1] || pathSegments[0] || 'Unknown');
-      }
-    }
-    
-    if (!routesByClass[className]) {
-      routesByClass[className] = [];
-    }
-    routesByClass[className].push(route);
-  });
-
-  // Analyze conflicts within each class
-  const conflictAnalysis = {};
-  
-  Object.keys(routesByClass).forEach(className => {
-    const routes = routesByClass[className];
-    const methodNames = {};
-
-    routes.forEach(route => {
-      // Extract base method name (without HTTP method prefix)
-      const baseMethodName = extractBaseMethodName(route, utils);
-      
-      if (!methodNames[baseMethodName]) {
-        methodNames[baseMethodName] = [];
-      }
-      methodNames[baseMethodName].push(route);
-    });
-
-    // Find conflicts within this class
-    const conflicts = Object.keys(methodNames).filter(name => methodNames[name].length > 1);
-    
-    if (conflicts.length > 0) {
-      conflictAnalysis[className] = {};
-      conflicts.forEach(conflictName => {
-        conflictAnalysis[className][conflictName] = methodNames[conflictName];
-      });
-    }
-  });
-
-  return { routesByClass, conflictAnalysis, allRoutes };
-};
-
-// Step 2: Extract base method name from route
-const extractBaseMethodName = (route, utils) => {
-  const { _ } = utils;
-  
-  if (!route.raw?.route) return 'unknown';
-  
-  const pathSegments = route.raw.route.split('/').filter(p => p && !p.startsWith('{'));
-  
-  if (pathSegments.length >= 2) {
-    // Get the action from the last meaningful segment
-    const action = pathSegments[pathSegments.length - 1];
-    return toCamelCase(action);
-  }
-  
-  if (pathSegments.length === 1) {
-    // For single segment paths like /users, /auth
-    const resource = pathSegments[0];
-    return toCamelCase(resource);
-  }
-  
-  return route.raw.method.toLowerCase();
-};
-
-// Step 3: Resolve conflicts dynamically - match procedure-call.ejs logic
-const resolveMethodNameConflicts = (route, conflictAnalysis, routesByClass, utils) => {
-  const { _ } = utils;
-  const path = route.raw.route;
-  const method = route.raw.method.toLowerCase();
-  const pathSegments = path.split('/').filter(p => p && !p.startsWith('{'));
-  
-  const baseMethodName = extractBaseMethodName(route, utils);
-  
-  // Use same selective logic as procedure-call.ejs
-  let methodName = baseMethodName;
-  
-  // Rule 1: Parameterized routes - add ByParam suffix to avoid conflicts
-  if (path.includes('{')) {
-    const paramMatch = path.match(/\{([^}]+)\}/);
-    if (paramMatch) {
-      const paramName = paramMatch[1].replace(/_([a-z])/g, (match, letter) => letter.toUpperCase());
-      methodName = `${method}${_.upperFirst(baseMethodName)}By${_.upperFirst(paramName)}`;
-    }
-  }
-  // Rule 2: Context-specific routes (jwt/login, cookie/login) 
-  else if (pathSegments.length >= 2 && ['login', 'logout'].includes(baseMethodName.toLowerCase())) {
-    const context = pathSegments[pathSegments.length - 2];
-    methodName = `${baseMethodName}${_.upperFirst(toCamelCase(context))}`;
-  }
-  // Rule 3: Only add HTTP prefix for known multi-method endpoints
-  else if (pathSegments.length >= 2 && ['tiers', 'ratelimits', 'me'].includes(baseMethodName.toLowerCase())) {
-    methodName = `${method}${_.upperFirst(baseMethodName)}`;
-  }
-  // Rule 4: Single-segment multi-method resources  
-  else if (pathSegments.length === 1 && ['users', 'plans'].includes(pathSegments[0])) {
-    methodName = `${method}${_.upperFirst(baseMethodName)}`;
-  }
-  // Rule 5: Keep simple names for single-action routes (register, verify, etc.)
-  else {
-    methodName = baseMethodName;
-  }
-  
-  return methodName;
-};
-
-// Step 4: Detect different types of conflicts
-const hasPathParamConflict = (conflictingRoutes) => {
-  // Check if some routes have path params and others don't
-  const withParams = conflictingRoutes.filter(r => r.raw.route.includes('{'));
-  const withoutParams = conflictingRoutes.filter(r => !r.raw.route.includes('{'));
-  return withParams.length > 0 && withoutParams.length > 0;
-};
-
-const hasContextConflict = (conflictingRoutes) => {
-  // Check if routes have different context segments (like jwt vs cookie)
-  const contexts = conflictingRoutes.map(route => {
-    const pathSegments = route.raw.route.split('/').filter(p => p && !p.startsWith('{'));
-    return pathSegments.length >= 2 ? pathSegments[pathSegments.length - 2] : null;
-  }).filter(c => c !== null);
-  
-  return new Set(contexts).size > 1;
-};
-
-// Step 5: Apply resolution strategies  
-const resolvePathParamConflict = (route, baseMethodName, utils) => {
-  const { _ } = utils;
-  
-  if (route.raw.route.includes('{')) {
-    // Keep consistent with procedure-call.ejs - just use HTTP method prefix
-    return `${route.raw.method.toLowerCase()}${_.upperFirst(baseMethodName)}`;
-  }
-  
-  // For non-parameterized routes, add HTTP method prefix
-  return `${route.raw.method.toLowerCase()}${_.upperFirst(baseMethodName)}`;
-};
-
-const resolveContextConflict = (route, baseMethodName, utils) => {
-  const { _ } = utils;
-  
-  const pathSegments = route.raw.route.split('/').filter(p => p && !p.startsWith('{'));
-  if (pathSegments.length >= 2) {
-    const context = pathSegments[pathSegments.length - 2];
-    return `${baseMethodName}${_.upperFirst(toCamelCase(context))}`;
-  }
-  
-  // Fallback to HTTP method prefix
-  return `${route.raw.method.toLowerCase()}${_.upperFirst(baseMethodName)}`;
-};
-
-const resolveHttpMethodConflict = (route, baseMethodName, utils) => {
-  const { _ } = utils;
-  return `${route.raw.method.toLowerCase()}${_.upperFirst(baseMethodName)}`;
-};
-
-// Step 6: Generate input/result type names with cross-class conflict detection
-const generateTypeNames = (route, methodName, allRoutes, utils) => {
-  const { _ } = utils;
-  
-  // Determine class name
-  let className = 'Unknown';
-  if (route.raw?.route) {
-    const pathSegments = route.raw.route.split('/').filter(p => p && !p.startsWith('{'));
-    if (pathSegments.length > 0) {
-      className = _.upperFirst(pathSegments[1] || pathSegments[0] || 'Unknown');
-    }
-  }
-
-  const pascalMethodName = methodName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).replace(/\s+/g, '');
-  
-  // Check for cross-class conflicts for types
-  const samePascalNames = allRoutes.filter(r => {
-    if (r === route) return false;
-    
-    const analysis = analyzeRoutes({combined: [{routes: allRoutes}]}, utils);
-    const otherMethodName = resolveMethodNameConflicts(r, analysis.conflictAnalysis, analysis.routesByClass, utils);
-    const otherPascalName = otherMethodName.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()).replace(/\s+/g, '');
-    
-    return otherPascalName === pascalMethodName;
-  });
-
-  // If there are cross-class conflicts, add class name to type names
-  const needsClassPrefix = samePascalNames.length > 0;
-  
-  if (needsClassPrefix) {
-    return {
-      inputTypeName: `${pascalMethodName}${className}Input`,
-      resultTypeName: `${pascalMethodName}${className}Result`
-    };
-  } else {
-    return {
-      inputTypeName: `${pascalMethodName}Input`,
-      resultTypeName: `${pascalMethodName}Result`
-    };
-  }
-};
-
-// Main function to get resolved method name and type names for a route
-const getResolvedNames = (route, routes, utils) => {
-  const analysis = analyzeRoutes(routes, utils);
-  const methodName = resolveMethodNameConflicts(route, analysis.conflictAnalysis, analysis.routesByClass, utils);
-  const typeNames = generateTypeNames(route, methodName, analysis.allRoutes, utils);
-  
-  return {
-    methodName,
-    inputTypeName: typeNames.inputTypeName,
-    resultTypeName: typeNames.resultTypeName
-  };
-};
+}
 
 const buildGenerics = (contract) => {
   if (!contract.genericArgs || !contract.genericArgs.length) return '';
@@ -311,10 +85,10 @@ const getUniqueTypeName = (baseName) => {
 <% for (const route of combinedRoutes) { %>
 <% 
 // Use dynamic naming logic to get resolved names
-const resolvedNames = getResolvedNames(route, routes, utils);
-const inputTypeName = getUniqueTypeName(resolvedNames.inputTypeName);
-const resultTypeName = getUniqueTypeName(resolvedNames.resultTypeName);
-const simpleMethodName = resolvedNames.methodName;
+const routeNaming = namingUtils.getRouteNaming(route, allRoutes, utils);
+const inputTypeName = getUniqueTypeName(routeNaming.inputTypeName);
+const resultTypeName = getUniqueTypeName(routeNaming.resultTypeName);
+const simpleMethodName = routeNaming.methodName;
 %>
 
 <% /* Generate input type */ %>

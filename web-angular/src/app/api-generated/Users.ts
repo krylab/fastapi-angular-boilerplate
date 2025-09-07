@@ -21,7 +21,7 @@ export class Users {
    * No description
    *
    * @tags users
-   * @name UsersMe
+   * @name Me
    * @summary Users:Current User
    * @request GET:/api/users/me
    * @secure
@@ -45,7 +45,7 @@ export class Users {
    * No description
    *
    * @tags users
-   * @name UsersMe
+   * @name Me
    * @summary Users:Patch Current User
    * @request PATCH:/api/users/me
    * @secure
@@ -78,11 +78,11 @@ export class Users {
    * @response `200` `UsersUserApiUsersIdGetData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  getUsersById = (
-    params: Signal<Types.GetUsersByIdInput | undefined>,
+  getUsers = (
+    params: Signal<Types.GetUsersInput | undefined>,
     host?: string,
   ) => {
-    return httpResource<Types.GetUsersByIdResult>(() => {
+    return httpResource<Types.GetUsersResult>(() => {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
@@ -107,11 +107,11 @@ export class Users {
    * @response `200` `UsersPatchUserApiUsersIdPatchData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  patchUsersById = (
-    params: Signal<Types.PatchUsersByIdInput | undefined>,
+  patchUsers = (
+    params: Signal<Types.PatchUsersInput | undefined>,
     host?: string,
   ) => {
-    return httpResource<Types.PatchUsersByIdResult>(() => {
+    return httpResource<Types.PatchUsersResult>(() => {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
@@ -137,11 +137,11 @@ export class Users {
    * @response `204` `UsersDeleteUserApiUsersIdDeleteData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  deleteUsersById = (
-    params: Signal<Types.DeleteUsersByIdInput | undefined>,
+  deleteUsers = (
+    params: Signal<Types.DeleteUsersInput | undefined>,
     host?: string,
   ) => {
-    return httpResource<Types.DeleteUsersByIdResult>(() => {
+    return httpResource<Types.DeleteUsersResult>(() => {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
