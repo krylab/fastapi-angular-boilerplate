@@ -1,0 +1,50 @@
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - "release_*"
+
+jobs:
+  build-angular:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: web-angular/package-lock.json
+
+      - name: Install Angular dependencies
+        working-directory: web-angular
+        run: npm ci
+
+      - name: Build Angular for production
+        working-directory: web-angular
+        run: npm run build:prod
+
+      - name: Upload Angular build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: angular-dist
+          path: publish/browser/
+          retention-days: 1
+
+  build-docker:
+    needs: build-angular
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download Angular build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: angular-dist
+          path: publish/browser/
+
+      - name: Build production Docker image
+        run: |
+          docker build -t fastapi-angular-app:latest .

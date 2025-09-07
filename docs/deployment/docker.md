@@ -27,15 +27,35 @@ docker compose -f docker-compose.yml -f deploy/docker-compose.dev.yml up --build
 
 ### Production Environment
 
+For production deployment with integrated Angular frontend:
+
+**Option 1: Using the build script (recommended)**
+
 ```bash
-# Build and start production containers
-docker compose up --build -d
+# Build Angular and Docker image
+./scripts/build-production.sh
+
+# Start production containers
+docker compose up -d
 
 # Check status
 docker compose ps
 
 # View logs
 docker compose logs -f
+```
+
+**Option 2: Manual build**
+
+```bash
+# Step 1: Build Angular for production
+cd web-angular
+npm install
+npm run build:prod
+cd ..
+
+# Step 2: Build and start Docker containers
+docker compose up --build -d
 ```
 
 ## Docker Compose Configurations
@@ -190,43 +210,49 @@ services:
 
 ## Dockerfiles
 
-### Backend Dockerfile
+### Production Dockerfile
+
+The production Dockerfile is optimized to serve both the FastAPI backend and Angular frontend from a single container:
 
 ```dockerfile
-FROM python:3.12-slim
+# Production Dockerfile - expects pre-built Angular app in publish/ directory
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS final
 
+# Set environment variables for uv to optimize builds
+ENV UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy
+
+# Set the working directory inside the container
 WORKDIR /app
 
-# Install system dependencies
-RUN apt-get update && apt-get install -y \
-    curl \
-    && rm -rf /var/lib/apt/lists/*
+# Copy the Python modules and their dependencies
+COPY pyproject.toml uv.lock README.md ./
+COPY lelab-common/ ./lelab-common/
+COPY rest_angular/ ./rest_angular/
 
-# Install UV
-RUN pip install uv
+# Install all dependencies and the project itself
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv sync --frozen --no-dev
 
-# Copy dependency files
-COPY pyproject.toml uv.lock ./
-COPY lelab-common ./lelab-common/
+# Copy pre-built Angular files from local publish directory
+COPY publish/browser/ ./rest_angular/static/
 
-# Install dependencies
-RUN uv sync --frozen
+# Set the PATH to include the virtual environment's bin directory
+ENV PATH="/app/.venv/bin:$PATH"
 
-# Copy application code
-COPY rest_angular ./rest_angular/
-COPY alembic.ini ./
+# Expose the port your application listens on
+EXPOSE 8000
 
-# Create non-root user
-RUN useradd --create-home --shell /bin/bash app
-USER app
-
-# Health check
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:8000/api/health || exit 1
-
-# Run the application
-CMD ["uv", "run", "-m", "rest_angular"]
+# Set the default command to run the FastAPI application
+CMD ["python", "-m", "rest_angular"]
 ```
+
+**Key Features:**
+
+-   Single-stage build for production efficiency
+-   Pre-built Angular app copied from local `publish/browser/` directory
+-   FastAPI serves both API and static Angular files
+-   Optimized for fast deployment and minimal image size
 
 ### Frontend Dockerfile (Development)
 
@@ -533,29 +559,96 @@ docker volume prune
 
 ### GitHub Actions
 
+The project includes optimized CI/CD workflows:
+
+#### Build and Deploy Workflow
+
 ```yaml
-name: Deploy
+name: Build and Deploy
 
 on:
     push:
         branches: [main]
+    pull_request:
+        branches: [main]
 
 jobs:
-    deploy:
+    build-angular:
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v3
+            - uses: actions/checkout@v4
 
-            - name: Deploy to production
-              run: |
-                  docker compose -f docker-compose.yml -f deploy/docker-compose.prod.yml pull
-                  docker compose -f docker-compose.yml -f deploy/docker-compose.prod.yml up -d
+            - name: Setup Node.js
+              uses: actions/setup-node@v4
+              with:
+                  node-version: "20"
+                  cache: "npm"
+                  cache-dependency-path: web-angular/package-lock.json
 
-            - name: Run health check
+            - name: Install Angular dependencies
+              working-directory: web-angular
+              run: npm ci
+
+            - name: Build Angular for production
+              working-directory: web-angular
+              run: npm run build:prod
+
+            - name: Upload Angular build artifacts
+              uses: actions/upload-artifact@v4
+              with:
+                  name: angular-dist
+                  path: publish/browser/
+                  retention-days: 1
+
+    build-docker:
+        needs: build-angular
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: Download Angular build artifacts
+              uses: actions/download-artifact@v4
+              with:
+                  name: angular-dist
+                  path: publish/browser/
+
+            - name: Build production Docker image
+              run: docker compose build api
+
+            - name: Test production image starts correctly
               run: |
-                  sleep 30
-                  curl -f http://localhost/health
+                  docker compose up -d api
+                  sleep 10
+                  curl -f http://localhost:8000/api/docs || exit 1
+                  docker compose down
 ```
+
+#### Testing Workflow (Optimized)
+
+```yaml
+name: Testing rest_angular
+
+on: push
+
+jobs:
+    pytest:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - name: Build Docker images silently
+              run: |
+                  docker compose -f docker-compose.yml -f docker-compose.test.yml build api > /dev/null
+            - name: Run tests
+              run: |
+                  docker compose -f docker-compose.yml -f docker-compose.test.yml run --quiet-pull --rm api
+```
+
+**Key Features:**
+
+-   **Separated workflows**: Build and test run independently
+-   **Angular build optimization**: Uses Node.js environment for building, artifacts cached
+-   **Fast testing**: Tests skip Angular build for speed
+-   **Artifact management**: Angular build results shared between jobs
 
 ## Troubleshooting
 

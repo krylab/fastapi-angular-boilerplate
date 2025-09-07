@@ -1,4 +1,4 @@
-# Use a Python base image with uv pre-installed for convenience and speed.
+# Production Dockerfile - expects pre-built Angular app in publish/ directory
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS final
 
 # Set environment variables for uv to optimize builds
@@ -16,6 +16,9 @@ COPY rest_angular/ ./rest_angular/
 # Install all dependencies and the project itself
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-dev
+
+# Copy pre-built Angular files from local publish directory
+COPY publish/browser/ ./rest_angular/static/
 
 # Set the PATH to include the virtual environment's bin directory
 ENV PATH="/app/.venv/bin:$PATH"

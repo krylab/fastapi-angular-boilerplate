@@ -1,9 +1,11 @@
 import os
 import time
 from contextlib import asynccontextmanager
+from pathlib import Path
 
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 from lelab_common import (
     RequestTraceMiddleware,
     get_configuration,
@@ -59,12 +61,49 @@ def create_app() -> FastAPI:
     )
     app.add_middleware(RequestTraceMiddleware)
 
-    """ Add routes """
+    """ Add API routes first (higher priority) """
     api_router = APIRouter(prefix="/api")
     api_router.include_router(system_router)
     api_router.include_router(user_routes.router)
     api_router.include_router(plans_routes.router)
     app.include_router(api_router)
+
+    """ Static files for Angular app (production only) """
+    static_dir = Path(__file__).parent / "static"
+    index_file = static_dir / "index.html"
+    if index_file.exists():
+        # Import required modules
+        from fastapi import Request
+        from fastapi.responses import FileResponse
+
+        # Serve static files at root path and handle Angular SPA routing
+        @app.get("/{file_path:path}")
+        async def serve_static_or_angular(request: Request, file_path: str):
+            """
+            Serve static files at root path and Angular app for SPA routing.
+            This catch-all route handles all non-API requests.
+            Priority: Static files > Angular SPA (index.html)
+            """
+            # Handle root path - serve index.html
+            if not file_path or file_path == "":
+                return FileResponse(index_file)
+
+            # Check if it's a static file request
+            static_file_path = static_dir / file_path
+            if static_file_path.exists() and static_file_path.is_file():
+                return FileResponse(static_file_path)
+
+            # For all other routes, serve index.html (Angular SPA routing)
+            # This enables Angular's client-side routing
+            return FileResponse(index_file)
+    else:
+        # Fallback route when Angular is not built
+        @app.get("/{full_path:path}")
+        async def angular_not_built(full_path: str):
+            """
+            Fallback when Angular app is not built.
+            """
+            return {"detail": "Angular app not built. Run with BUILD_ANGULAR=true in production."}
 
     """ Dependency overrides """
     app.dependency_overrides[get_configuration] = lambda: settings

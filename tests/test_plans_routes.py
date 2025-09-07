@@ -1,6 +1,7 @@
 import uuid
 
 import pytest
+from fastapi import FastAPI
 from httpx import AsyncClient
 
 
@@ -8,18 +9,20 @@ from httpx import AsyncClient
 class TestTierRoutes:
     """Test suite for tier-related endpoints."""
 
-    async def test_get_tiers_empty(self, client: AsyncClient):
+    async def test_get_tiers_empty(self, client: AsyncClient, fastapi_app: FastAPI):
         """Test getting tiers when none exist."""
-        response = await client.get("/api/tiers")
+        url = fastapi_app.url_path_for("get_tiers")
+        response = await client.get(url)
 
         assert response.status_code == 200
         assert response.json() == []
 
-    async def test_create_tier_success(self, client: AsyncClient):
+    async def test_create_tier_success(self, client: AsyncClient, fastapi_app: FastAPI):
         """Test successful tier creation."""
         tier_data = {"name": "premium"}
 
-        response = await client.post("/api/tiers", json=tier_data)
+        url = fastapi_app.url_path_for("create_tier")
+        response = await client.post(url, json=tier_data)
 
         assert response.status_code == 201
         data = response.json()
@@ -27,107 +30,122 @@ class TestTierRoutes:
         assert "id" in data
         assert "created_at" in data
 
-    async def test_create_tier_duplicate_name(self, client: AsyncClient):
+    async def test_create_tier_duplicate_name(self, client: AsyncClient, fastapi_app: FastAPI):
         """Test tier creation with duplicate name fails."""
         # Create first tier
         tier_data = {"name": "enterprise"}
-        await client.post("/api/tiers", json=tier_data)
+        create_url = fastapi_app.url_path_for("create_tier")
+        await client.post(create_url, json=tier_data)
 
         # Try to create second tier with same name
-        response = await client.post("/api/tiers", json=tier_data)
+        response = await client.post(create_url, json=tier_data)
 
         assert response.status_code == 400
         assert "already exists" in response.json()["message"].lower()
 
-    async def test_get_tiers_with_data(self, client: AsyncClient):
+    async def test_get_tiers_with_data(self, client: AsyncClient, fastapi_app: FastAPI):
         """Test getting tiers when some exist."""
         # Create some random tiers
         tiers = [uuid.uuid4().hex for _ in range(3)]
+        create_url = fastapi_app.url_path_for("create_tier")
         for tier_name in tiers:
-            await client.post("/api/tiers", json={"name": tier_name})
+            await client.post(create_url, json={"name": tier_name})
 
-        response = await client.get("/api/tiers")
+        get_url = fastapi_app.url_path_for("get_tiers")
+        response = await client.get(get_url)
 
         assert response.status_code == 200
         data = response.json()
         assert len(data) >= 3
         assert all(tier_name in [tier["name"] for tier in data] for tier_name in tiers)
 
-    async def test_get_tier_by_id_success(self, client: AsyncClient):
+    async def test_get_tier_by_id_success(self, client: AsyncClient, fastapi_app: FastAPI):
         """Test successful tier retrieval by ID."""
         # Create a tier
-        create_response = await client.post("/api/tiers", json={"name": "basic"})
+        create_url = fastapi_app.url_path_for("create_tier")
+        create_response = await client.post(create_url, json={"name": "basic"})
         tier_id = create_response.json()["id"]
 
-        response = await client.get(f"/api/tiers/{tier_id}")
+        get_url = fastapi_app.url_path_for("get_tier", tier_id=tier_id)
+        response = await client.get(get_url)
 
         assert response.status_code == 200
         data = response.json()
         assert data["id"] == tier_id
         assert data["name"] == "basic"
 
-    async def test_get_tier_by_id_not_found(self, client: AsyncClient):
+    async def test_get_tier_by_id_not_found(self, client: AsyncClient, fastapi_app: FastAPI):
         """Test tier retrieval with non-existent ID."""
-        response = await client.get("/api/tiers/999")
+        url = fastapi_app.url_path_for("get_tier", tier_id=999)
+        response = await client.get(url)
 
         assert response.status_code == 404
         assert "not found" in response.json()["message"].lower()
 
-    async def test_update_tier_success(self, client: AsyncClient):
+    async def test_update_tier_success(self, client: AsyncClient, fastapi_app: FastAPI):
         """Test successful tier update."""
         # Create a tier
-        create_response = await client.post("/api/tiers", json={"name": "old_name"})
+        create_url = fastapi_app.url_path_for("create_tier")
+        create_response = await client.post(create_url, json={"name": "old_name"})
         tier_id = create_response.json()["id"]
 
         # Update the tier
         update_data = {"name": "new_name"}
-        response = await client.put(f"/api/tiers/{tier_id}", json=update_data)
+        update_url = fastapi_app.url_path_for("update_tier", tier_id=tier_id)
+        response = await client.put(update_url, json=update_data)
 
         assert response.status_code == 200
         data = response.json()
         assert data["name"] == "new_name"
         assert data["id"] == tier_id
 
-    async def test_update_tier_not_found(self, client: AsyncClient):
+    async def test_update_tier_not_found(self, client: AsyncClient, fastapi_app: FastAPI):
         """Test tier update with non-existent ID."""
         update_data = {"name": "new_name"}
-        response = await client.put("/api/tiers/999", json=update_data)
+        url = fastapi_app.url_path_for("update_tier", tier_id=999)
+        response = await client.put(url, json=update_data)
 
         assert response.status_code == 404
         assert "not found" in response.json()["message"].lower()
 
-    async def test_update_tier_duplicate_name(self, client: AsyncClient):
+    async def test_update_tier_duplicate_name(self, client: AsyncClient, fastapi_app: FastAPI):
         """Test tier update with duplicate name fails."""
         # Create two tiers
-        await client.post("/api/tiers", json={"name": "tier1"})
-        create_response = await client.post("/api/tiers", json={"name": "tier2"})
+        create_url = fastapi_app.url_path_for("create_tier")
+        await client.post(create_url, json={"name": "tier1"})
+        create_response = await client.post(create_url, json={"name": "tier2"})
         tier_id = create_response.json()["id"]
 
         # Try to update second tier with first tier's name
         update_data = {"name": "tier1"}
-        response = await client.put(f"/api/tiers/{tier_id}", json=update_data)
+        update_url = fastapi_app.url_path_for("update_tier", tier_id=tier_id)
+        response = await client.put(update_url, json=update_data)
 
         assert response.status_code == 400
         assert "already exists" in response.json()["message"].lower()
 
-    async def test_delete_tier_success(self, client: AsyncClient):
+    async def test_delete_tier_success(self, client: AsyncClient, fastapi_app: FastAPI):
         """Test successful tier deletion."""
         # Create a tier
-        create_response = await client.post("/api/tiers", json={"name": "to_delete"})
+        create_url = fastapi_app.url_path_for("create_tier")
+        create_response = await client.post(create_url, json={"name": "to_delete"})
         tier_id = create_response.json()["id"]
 
         # Delete the tier
-        response = await client.delete(f"/api/tiers/{tier_id}")
+        delete_url = fastapi_app.url_path_for("delete_tier", tier_id=tier_id)
+        response = await client.delete(delete_url)
 
         assert response.status_code == 204
 
         # Verify it's deleted
-        get_response = await client.get(f"/api/tiers/{tier_id}")
+        get_url = fastapi_app.url_path_for("get_tier", tier_id=tier_id)
+        get_response = await client.get(get_url)
         assert get_response.status_code == 404
 
-    async def test_delete_tier_not_found(self, client: AsyncClient):
+    async def test_delete_tier_not_found(self, client: AsyncClient, fastapi_app: FastAPI):
         """Test tier deletion with non-existent ID."""
-        response = await client.delete("/api/tiers/999")
+        url = fastapi_app.url_path_for("delete_tier", tier_id=999)
+        response = await client.delete(url)
 
         assert response.status_code == 404
         assert "not found" in response.json()["message"].lower()
@@ -137,31 +155,35 @@ class TestTierRoutes:
 class TestRateLimitRoutes:
     """Test suite for rate limit-related endpoints."""
 
-    async def test_get_rate_limits_empty(self, client: AsyncClient):
+    async def test_get_rate_limits_empty(self, client: AsyncClient, fastapi_app: FastAPI):
         """Test getting rate limits when none exist."""
-        response = await client.get("/api/rate-limits")
+        url = fastapi_app.url_path_for("get_rate_limits")
+        response = await client.get(url)
 
         assert response.status_code == 200
         assert response.json() == []
 
-    async def test_get_rate_limit_by_id_not_found(self, client: AsyncClient):
+    async def test_get_rate_limit_by_id_not_found(self, client: AsyncClient, fastapi_app: FastAPI):
         """Test rate limit retrieval with non-existent ID."""
-        response = await client.get("/api/rate-limits/999")
+        url = fastapi_app.url_path_for("get_rate_limit", rate_limit_id=999)
+        response = await client.get(url)
 
         assert response.status_code == 404
         assert "not found" in response.json()["message"].lower()
 
-    async def test_update_rate_limit_not_found(self, client: AsyncClient):
+    async def test_update_rate_limit_not_found(self, client: AsyncClient, fastapi_app: FastAPI):
         """Test rate limit update with non-existent ID."""
         update_data = {"limit": 100}
-        response = await client.put("/api/rate-limits/999", json=update_data)
+        url = fastapi_app.url_path_for("update_rate_limit", rate_limit_id=999)
+        response = await client.put(url, json=update_data)
 
         assert response.status_code == 404
         assert "not found" in response.json()["message"].lower()
 
-    async def test_delete_rate_limit_not_found(self, client: AsyncClient):
+    async def test_delete_rate_limit_not_found(self, client: AsyncClient, fastapi_app: FastAPI):
         """Test rate limit deletion with non-existent ID."""
-        response = await client.delete("/api/rate-limits/999")
+        url = fastapi_app.url_path_for("delete_rate_limit", rate_limit_id=999)
+        response = await client.delete(url)
 
         assert response.status_code == 404
         assert "not found" in response.json()["message"].lower()
@@ -171,7 +193,7 @@ class TestRateLimitRoutes:
 class TestEagerLoading:
     """Test suite for eager loading functionality."""
 
-    async def test_selective_eager_loading_difference(self, client: AsyncClient):
+    async def test_selective_eager_loading_difference(self, client: AsyncClient, fastapi_app: FastAPI):
         """
         Test to demonstrate the new selective eager loading functionality.
 
@@ -182,12 +204,14 @@ class TestEagerLoading:
         """
         # Create a tier first
         tier_data = {"name": "test_eager_tier"}
-        create_response = await client.post("/api/tiers", json=tier_data)
+        create_url = fastapi_app.url_path_for("create_tier")
+        create_response = await client.post(create_url, json=tier_data)
         tier_id = create_response.json()["id"]
 
         # Test 1: Regular get_by_id (no eager loading)
         # This will NOT load tier_targets - they will be loaded lazily when accessed
-        response = await client.get(f"/api/tiers/{tier_id}")
+        get_url = fastapi_app.url_path_for("get_tier", tier_id=tier_id)
+        response = await client.get(get_url)
         assert response.status_code == 200
 
         # The response should only contain tier data, not tier_targets

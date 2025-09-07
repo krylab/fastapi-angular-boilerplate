@@ -246,6 +246,8 @@ If you want to run it in docker, simply run:
 docker compose -f docker-compose.yml -f docker-compose.test.yml run --build --rm api
 ```
 
+**Note:** Tests run without Angular frontend for faster execution and focus on backend functionality.
+
 For running tests on your local machine:
 
 Make sure you have the required services running (see [Environment Setup](#environment-setup) section above), then run:
@@ -265,10 +267,51 @@ npm test
 
 ## Docker
 
-You can start the entire stack with docker using this command:
+### Production Deployment
+
+For production deployment with Angular frontend integrated, you have two options:
+
+**Option 1: Using the build script (recommended)**
 
 ```bash
+# Build everything and start
+./scripts/build-production.sh
+docker compose up
+```
+
+**Option 2: Manual build**
+
+```bash
+# Step 1: Build Angular for production
+cd web-angular
+npm install
+npm run build:prod
+cd ..
+
+# Step 2: Build and start the Docker container
 docker compose up --build
+```
+
+This will:
+
+-   Build the Angular application in production mode to `publish/browser/` directory
+-   Bundle it as static files served by FastAPI at runtime
+-   Serve the complete full-stack application on port 8000
+
+### Development Mode
+
+For development (faster builds, Angular served separately):
+
+```bash
+# Start backend only (no Angular build required)
+docker compose up --build
+```
+
+In development, run Angular separately:
+
+```bash
+cd web-angular
+npm start  # Serves on http://localhost:4200
 ```
 
 If you want to develop in docker with autoreload and exposed ports add `-f deploy/docker compose.dev.yml` to your docker command:

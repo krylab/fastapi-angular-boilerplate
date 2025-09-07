@@ -23,13 +23,13 @@ router = APIRouter(prefix="/plans", tags=["plans"])
 
 
 # Tier routes
-@router.get("/tiers", response_model=list[TierRead])
+@router.get("/tiers", response_model=list[TierRead], name="get_tiers")
 async def get_tiers(repo: TierRepositoryDep):
     tiers = await repo.get_all()
     return [TierRead(id=tier.id, name=tier.name, created_at=tier.created_at) for tier in tiers]
 
 
-@router.get("/tiers/{tier_id}", response_model=TierRead)
+@router.get("/tiers/{tier_id}", response_model=TierRead, name="get_tier")
 async def get_tier(
     tier_id: int,
     repo: TierRepositoryDep,
@@ -40,7 +40,7 @@ async def get_tier(
     return TierRead(id=tier.id, name=tier.name, created_at=tier.created_at)
 
 
-@router.post("/tiers", response_model=TierRead, status_code=status.HTTP_201_CREATED)
+@router.post("/tiers", response_model=TierRead, status_code=status.HTTP_201_CREATED, name="create_tier")
 async def create_tier(
     tier_data: TierCreate,
     repo: TierRepositoryDep,
@@ -55,7 +55,7 @@ async def create_tier(
     return TierRead(id=new_tier.id, name=new_tier.name, created_at=new_tier.created_at)
 
 
-@router.put("/tiers/{tier_id}", response_model=TierRead)
+@router.put("/tiers/{tier_id}", response_model=TierRead, name="update_tier")
 async def update_tier(
     tier_id: int,
     tier_data: TierUpdate,
@@ -77,7 +77,7 @@ async def update_tier(
     return TierRead(id=tier.id, name=tier.name, created_at=tier.created_at)
 
 
-@router.delete("/tiers/{tier_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/tiers/{tier_id}", status_code=status.HTTP_204_NO_CONTENT, name="delete_tier")
 async def delete_tier(
     tier_id: int,
     repo: TierRepositoryDep,
@@ -89,7 +89,7 @@ async def delete_tier(
 
 
 # Rate Limit routes
-@router.get("/rate-limits", response_model=list[RateLimitRead])
+@router.get("/rate-limits", response_model=list[RateLimitRead], name="get_rate_limits")
 async def get_rate_limits(
     repo: RateLimitRepositoryDep,
 ):
@@ -107,7 +107,7 @@ async def get_rate_limits(
     ]
 
 
-@router.get("/rate-limits/{rate_limit_id}", response_model=RateLimitRead)
+@router.get("/rate-limits/{rate_limit_id}", response_model=RateLimitRead, name="get_rate_limit")
 async def get_rate_limit(
     rate_limit_id: int,
     repo: RateLimitRepositoryDep,
@@ -125,7 +125,7 @@ async def get_rate_limit(
     )
 
 
-@router.post("/rate-limits", response_model=RateLimitRead, status_code=status.HTTP_201_CREATED)
+@router.post("/rate-limits", response_model=RateLimitRead, status_code=status.HTTP_201_CREATED, name="create_rate_limit")
 async def create_rate_limit(
     rate_limit_data: RateLimitCreate,
     tier_target_id: int,
@@ -148,7 +148,7 @@ async def create_rate_limit(
     )
 
 
-@router.put("/rate-limits/{rate_limit_id}", response_model=RateLimitRead)
+@router.put("/rate-limits/{rate_limit_id}", response_model=RateLimitRead, name="update_rate_limit")
 async def update_rate_limit(
     rate_limit_id: int,
     rate_limit_data: RateLimitUpdate,
@@ -186,7 +186,7 @@ async def update_rate_limit(
     )
 
 
-@router.delete("/rate-limits/{rate_limit_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/rate-limits/{rate_limit_id}", status_code=status.HTTP_204_NO_CONTENT, name="delete_rate_limit")
 async def delete_rate_limit(
     rate_limit_id: int,
     repo: RateLimitRepositoryDep,

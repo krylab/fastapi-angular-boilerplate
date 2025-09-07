@@ -86,25 +86,46 @@ uv run uvicorn rest_angular.app:app --host 0.0.0.0 --port 8000 --workers 4
 
 ### Frontend Production
 
+For production, Angular is built and served by the FastAPI backend:
+
 ```bash
 cd web-angular
 
-# Build for production
-npm run build
+# Build for production (outputs to ../publish/browser/)
+npm run build:prod
 
-# Serve the built files (using a web server)
-npx http-server dist/web-angular -p 4200
+# The built files will be served by FastAPI at runtime
+# No separate web server needed
 ```
 
 ### Docker Production
 
-```bash
-# Build and run production containers
-docker compose up --build -d
+For production deployment with integrated Angular frontend:
 
-# Or with specific compose files
-docker compose -f docker-compose.yml -f deploy/docker-compose.prod.yml up -d
+**Option 1: Using the build script (recommended)**
+
+```bash
+# Build Angular and Docker image
+./scripts/build-production.sh
+
+# Start production containers
+docker compose up -d
 ```
+
+**Option 2: Manual build**
+
+```bash
+# Step 1: Build Angular for production
+cd web-angular
+npm install
+npm run build:prod
+cd ..
+
+# Step 2: Build and start Docker containers
+docker compose up --build -d
+```
+
+The production setup serves both the Angular frontend and FastAPI backend from a single container at http://localhost:8000.
 
 ## Testing Mode
 

@@ -29,10 +29,15 @@ web-angular/
 │   ├── assets/               # Static assets
 │   ├── environments/         # Environment configurations
 │   └── styles/               # Global styles
+├── dist/                     # Development build output
 ├── angular.json              # Angular CLI configuration
 ├── tailwind.config.js        # Tailwind configuration
 ├── tsconfig.json            # TypeScript configuration
 └── package.json             # Dependencies and scripts
+
+# Root level (for production)
+../publish/                   # Production build output
+└── browser/                  # Angular build files for FastAPI
 ```
 
 ## Key Features
@@ -45,6 +50,28 @@ The frontend automatically generates TypeScript interfaces and HTTP client metho
 # Generate API client
 npm run generate:api
 ```
+
+### 2. Production Build System
+
+The Angular application includes optimized build scripts for different environments:
+
+```bash
+# Development build (outputs to dist/)
+npm run build
+
+# Production build (outputs to ../publish/browser/)
+npm run build:prod
+
+# Development server with hot reload
+npm start
+```
+
+**Production Build Features:**
+
+-   Outputs to `../publish/browser/` for integration with FastAPI
+-   Optimized bundle sizes with tree-shaking
+-   Minified and compressed assets
+-   Cache-friendly file naming with hashes
 
 This creates type-safe API clients in `src/app/api-generated/`:
 
@@ -63,7 +90,7 @@ export class UsersService {
 }
 ```
 
-### 2. Reactive State Management
+### 3. Reactive State Management
 
 Uses RxJS for reactive state management:
 
@@ -92,7 +119,7 @@ export class UserService {
 }
 ```
 
-### 3. Authentication System
+### 4. Authentication System
 
 JWT-based authentication with automatic token management:
 
@@ -124,7 +151,7 @@ export class AuthService {
 }
 ```
 
-### 4. Route Guards
+### 5. Route Guards
 
 Protect routes with authentication guards:
 
@@ -144,7 +171,7 @@ export class AuthGuard implements CanActivate {
 }
 ```
 
-### 5. HTTP Interceptors
+### 6. HTTP Interceptors
 
 Automatic token injection and error handling:
 
@@ -500,8 +527,63 @@ export class UserCardComponent {
 </cdk-virtual-scroll-viewport>
 ```
 
+## Production Integration
+
+### FastAPI Static File Serving
+
+In production, the Angular application is served by FastAPI as static files:
+
+```python
+# FastAPI automatically serves Angular app
+static_dir = Path(__file__).parent / "static"
+index_file = static_dir / "index.html"
+
+if index_file.exists():
+    # Mount static files for Angular app
+    app.mount("/static", StaticFiles(directory=str(static_dir)), name="static")
+
+    # Serve Angular app at root path (catch-all for SPA routing)
+    @app.get("/{full_path:path}")
+    async def serve_angular_app(request: Request, full_path: str):
+        # Handle Angular client-side routing
+        return FileResponse(index_file)
+```
+
+### Build and Deployment Workflow
+
+```bash
+# Local development
+npm start                    # Angular dev server on :4200
+uv run -m rest_angular      # FastAPI on :8000
+
+# Production build
+npm run build:prod          # Builds to ../publish/browser/
+docker compose up --build   # FastAPI serves both API and frontend on :8000
+```
+
+### Environment Configuration
+
+The Angular app adapts to different environments:
+
+```typescript
+// src/environments/environment.ts
+export const environment = {
+    production: false,
+    apiUrl: "http://localhost:8000/api",
+    wsUrl: "ws://localhost:8000/ws",
+};
+
+// src/environments/environment.production.ts
+export const environment = {
+    production: true,
+    apiUrl: "/api", // Relative URL when served by FastAPI
+    wsUrl: "/ws",
+};
+```
+
 ## Next Steps
 
 -   [Components Guide](components.md) - Learn about reusable components
 -   [Services Guide](services.md) - Understand business logic services
 -   [API Integration](api-integration.md) - Connect with the backend API
+-   [Docker Deployment](../deployment/docker.md) - Deploy to production
