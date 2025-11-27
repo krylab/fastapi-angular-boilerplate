@@ -8,6 +8,8 @@ import { TableDropdownComponent } from '../../dropdowns/table-dropdown/table-dro
   imports: [NgClass, TableDropdownComponent],
 })
 export class CardTableComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Accessor inputs cannot be migrated as they are too complex.
   @Input()
   get color(): string {
     return this._color;

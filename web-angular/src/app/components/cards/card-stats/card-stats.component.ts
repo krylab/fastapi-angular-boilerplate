@@ -7,6 +7,8 @@ import { Component, Input, OnInit } from '@angular/core';
   imports: [NgClass],
 })
 export class CardStatsComponent implements OnInit {
+  // TODO: Skipped for migration because:
+  //  Accessor inputs cannot be migrated as they are too complex.
   @Input()
   get statSubtitle(): string {
     return this._statSubtitle;
@@ -16,6 +18,8 @@ export class CardStatsComponent implements OnInit {
   }
   private _statSubtitle = 'Traffic';
 
+  // TODO: Skipped for migration because:
+  //  Accessor inputs cannot be migrated as they are too complex.
   @Input()
   get statTitle(): string {
     return this._statTitle;
@@ -26,6 +30,8 @@ export class CardStatsComponent implements OnInit {
   private _statTitle = '350,897';
 
   // The value must match one of up or down
+  // TODO: Skipped for migration because:
+  //  Accessor inputs cannot be migrated as they are too complex.
   @Input()
   get statArrow(): string {
     return this._statArrow;
@@ -35,6 +41,8 @@ export class CardStatsComponent implements OnInit {
   }
   private _statArrow = 'up';
 
+  // TODO: Skipped for migration because:
+  //  Accessor inputs cannot be migrated as they are too complex.
   @Input()
   get statPercent(): string {
     return this._statPercent;
@@ -46,6 +54,8 @@ export class CardStatsComponent implements OnInit {
 
   // can be any of the text color utilities
   // from tailwindcss
+  // TODO: Skipped for migration because:
+  //  Accessor inputs cannot be migrated as they are too complex.
   @Input()
   get statPercentColor(): string {
     return this._statPercentColor;
@@ -55,6 +65,8 @@ export class CardStatsComponent implements OnInit {
   }
   private _statPercentColor = 'text-emerald-500';
 
+  // TODO: Skipped for migration because:
+  //  Accessor inputs cannot be migrated as they are too complex.
   @Input()
   get statDescripiron(): string {
     return this._statDescripiron;
@@ -64,6 +76,8 @@ export class CardStatsComponent implements OnInit {
   }
   private _statDescripiron = 'Since last month';
 
+  // TODO: Skipped for migration because:
+  //  Accessor inputs cannot be migrated as they are too complex.
   @Input()
   get statIconName(): string {
     return this._statIconName;
@@ -75,6 +89,8 @@ export class CardStatsComponent implements OnInit {
 
   // can be any of the background color utilities
   // from tailwindcss
+  // TODO: Skipped for migration because:
+  //  Accessor inputs cannot be migrated as they are too complex.
   @Input()
   get statIconColor(): string {
     return this._statIconColor;

@@ -1,4 +1,4 @@
-import { NgClass } from '@angular/common';
+
 import { Component, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { PagesDropdownComponent } from '../../dropdowns/pages-dropdown/pages-dropdown.component';
@@ -6,7 +6,7 @@ import { PagesDropdownComponent } from '../../dropdowns/pages-dropdown/pages-dro
 @Component({
   selector: 'app-auth-navbar',
   templateUrl: './auth-navbar.component.html',
-  imports: [RouterLink, NgClass, PagesDropdownComponent],
+  imports: [RouterLink, PagesDropdownComponent],
 })
 export class AuthNavbarComponent implements OnInit {
   navbarOpen = false;

@@ -23,7 +23,7 @@ class TestTierRoutes:
 
         url = fastapi_app.url_path_for("create_tier")
         response = await client.post(url, json=tier_data)
-        print(response.json())
+
         assert response.status_code == 201
         data = response.json()
         assert data["name"] == "premium"

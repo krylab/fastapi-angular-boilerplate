@@ -24,7 +24,7 @@
     </div>
     <div
       class="lg:flex flex-grow items-center"
-      [ngClass]="{ hidden: !navbarOpen, block: navbarOpen }"
+      [class]="{ hidden: !navbarOpen, block: navbarOpen }"
       id="example-navbar-warning"
     >
       <ul class="flex flex-col lg:flex-row list-none mr-auto">
@@ -42,7 +42,7 @@
       </ul>
       <ul class="flex flex-col lg:flex-row list-none lg:ml-auto">
         <li class="flex items-center">
-          <app-index-dropdown class="block"></app-index-dropdown>
+          <app-index-dropdown class="block" />
         </li>
         <li class="flex items-center">
           <a

@@ -9,6 +9,8 @@ import { Component, Input, OnInit } from '@angular/core';
 export class FooterSmallComponent implements OnInit {
   date = new Date().getFullYear();
 
+  // TODO: Skipped for migration because:
+  //  Accessor inputs cannot be migrated as they are too complex.
   @Input()
   get absolute(): boolean {
     return this._absolute;

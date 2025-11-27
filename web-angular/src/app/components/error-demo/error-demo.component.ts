@@ -5,7 +5,6 @@ import { RestService } from '../../common/services/rest.service';
 
 @Component({
   selector: 'app-error-demo',
-  standalone: true,
   imports: [CommonModule],
   template: `
     <div class="p-6 max-w-md mx-auto bg-white rounded-xl shadow-lg space-y-4">

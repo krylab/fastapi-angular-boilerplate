@@ -5,7 +5,6 @@ import { NotificationComponent } from '../notification/notification.component';
 
 @Component({
   selector: 'app-notification-container',
-  standalone: true,
   imports: [CommonModule, NotificationComponent],
   templateUrl: './notification-container.component.html',
   styleUrl: './notification-container.component.scss',

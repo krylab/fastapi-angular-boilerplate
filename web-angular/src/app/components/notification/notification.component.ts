@@ -1,27 +1,27 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnDestroy, OnInit, Output } from '@angular/core';
+import { Component, OnDestroy, OnInit, output, input } from '@angular/core';
 import { NotificationData } from '../../common/services/notification.service';
 
 @Component({
   selector: 'app-notification',
-  standalone: true,
   imports: [CommonModule],
   templateUrl: './notification.component.html',
   styleUrl: './notification.component.scss',
 })
 export class NotificationComponent implements OnInit, OnDestroy {
-  @Input() notification!: NotificationData;
-  @Output() close = new EventEmitter<string>();
-  @Output() actionClick = new EventEmitter<string>();
+  readonly notification = input.required<NotificationData>();
+  readonly close = output<string>();
+  readonly actionClick = output<string>();
 
   private timeoutId?: number;
 
   ngOnInit(): void {
     // Only set auto-dismiss timer if duration is specified and greater than 0
-    if (this.notification.duration && this.notification.duration > 0) {
+    const notification = this.notification();
+    if (notification.duration && notification.duration > 0) {
       this.timeoutId = window.setTimeout(() => {
         this.onClose();
-      }, this.notification.duration);
+      }, notification.duration);
     }
   }
 
@@ -33,17 +33,17 @@ export class NotificationComponent implements OnInit, OnDestroy {
   }
 
   onClose(): void {
-    this.close.emit(this.notification.id);
+    this.close.emit(this.notification().id);
   }
 
   onActionClick(): void {
-    this.actionClick.emit(this.notification.id);
+    this.actionClick.emit(this.notification().id);
   }
 
   getNotificationClasses(): string {
     const baseClasses = 'p-4 rounded-lg shadow-2xl border-l-4 mb-2 transition-all duration-300 ease-in-out backdrop-blur-sm';
 
-    switch (this.notification.type) {
+    switch (this.notification().type) {
       case 'success':
         return `${baseClasses} bg-green-100 border-green-500 text-green-900 shadow-green-200/50`;
       case 'error':
@@ -60,7 +60,7 @@ export class NotificationComponent implements OnInit, OnDestroy {
   }
 
   getIconClasses(): string {
-    switch (this.notification.type) {
+    switch (this.notification().type) {
       case 'success':
         return 'text-green-400';
       case 'error':

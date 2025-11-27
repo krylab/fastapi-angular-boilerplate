@@ -23,7 +23,7 @@
     </div>
     <div
       class="lg:flex flex-grow items-center bg-white lg:bg-opacity-0 lg:shadow-none"
-      [ngClass]="{ hidden: !navbarOpen, 'block rounded shadow-lg': navbarOpen }"
+      [class]="{ hidden: !navbarOpen, 'block rounded shadow-lg': navbarOpen }"
       id="example-navbar-warning"
     >
       <ul class="flex flex-col lg:flex-row list-none mr-auto">
@@ -41,7 +41,7 @@
       </ul>
       <ul class="flex flex-col lg:flex-row list-none lg:ml-auto">
         <li class="flex items-center">
-          <app-pages-dropdown class="block"></app-pages-dropdown>
+          <app-pages-dropdown class="block" />
         </li>
         <li class="flex items-center">
           <a

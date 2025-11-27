@@ -1,17 +1,19 @@
-import { Directive, ElementRef, HostListener, Renderer2, inject } from '@angular/core';
+import { Directive, ElementRef, Renderer2, inject } from '@angular/core';
 
 @Directive({
   selector: '[appDropdown]',
-  standalone: true
+  host: {
+    '(click)': 'toggleOpen()',
+    '(document:click)': 'close($event.target)',
+  },
 })
 export class DropdownDirective {
   private el = inject(ElementRef);
   private renderer = inject(Renderer2);
 
-
   private isOpen = false;
 
-  @HostListener('click') toggleOpen() {
+  toggleOpen() {
     this.isOpen = !this.isOpen;
     const dropdownMenu = this.el.nativeElement.querySelector('.dropdown-menu');
     if (this.isOpen) {
@@ -21,7 +23,7 @@ export class DropdownDirective {
     }
   }
 
-  @HostListener('document:click', ['$event.target']) close(targetElement: EventTarget) {
+  close(targetElement: EventTarget | null) {
     const insideClick = this.el.nativeElement.contains(targetElement);
     if (!insideClick) {
       this.isOpen = false;
@@ -29,5 +31,4 @@ export class DropdownDirective {
       this.renderer.setStyle(dropdownMenu, 'display', 'none');
     }
   }
-
 }

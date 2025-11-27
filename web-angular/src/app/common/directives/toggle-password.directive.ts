@@ -1,8 +1,10 @@
-import { Directive, ElementRef, HostListener, Renderer2, inject } from '@angular/core';
+import { Directive, ElementRef, Renderer2, inject } from '@angular/core';
 
 @Directive({
   selector: '[appTogglePassword]',
-  standalone: true
+  host: {
+    '(click)': 'togglePasswordVisibility()',
+  },
 })
 export class TogglePasswordDirective {
   private el = inject(ElementRef);
@@ -10,14 +12,9 @@ export class TogglePasswordDirective {
 
   private _shown = false;
 
-  @HostListener('click')
   togglePasswordVisibility() {
     this._shown = !this._shown;
-    this.renderer.setAttribute(
-      this.el.nativeElement.parentNode.querySelector('input'),
-      'type',
-      this._shown ? 'text' : 'password'
-    );
+    this.renderer.setAttribute(this.el.nativeElement.parentNode.querySelector('input'), 'type', this._shown ? 'text' : 'password');
 
     // Change the icon class accordingly
     if (this._shown) {
