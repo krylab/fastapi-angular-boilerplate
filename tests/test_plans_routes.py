@@ -23,7 +23,7 @@ class TestTierRoutes:
 
         url = fastapi_app.url_path_for("create_tier")
         response = await client.post(url, json=tier_data)
-
+        print(response.json())
         assert response.status_code == 201
         data = response.json()
         assert data["name"] == "premium"
@@ -187,6 +187,36 @@ class TestRateLimitRoutes:
 
         assert response.status_code == 404
         assert "not found" in response.json()["message"].lower()
+
+    async def test_delete_rate_limit_success(self, client: AsyncClient, fastapi_app: FastAPI):
+        """Test successful rate limit deletion."""
+        # Create a tier
+        create_tier_url = fastapi_app.url_path_for("create_tier")
+        tier_response = await client.post(create_tier_url, json={"name": "tier_for_delete_rl"})
+        tier_id = tier_response.json()["id"]
+
+        # Create a tier target
+        create_tier_target_url = fastapi_app.url_path_for("create_tier_target")
+        tier_target_data = {"target_type": "U", "target_id": "user_123", "name": "Test User"}
+        tier_target_response = await client.post(f"{create_tier_target_url}?tier_id={tier_id}", json=tier_target_data)
+        tier_target_id = tier_target_response.json()["id"]
+
+        # Create a rate limit
+        create_rl_url = fastapi_app.url_path_for("create_rate_limit")
+        rl_data = {"name": "limit_to_delete", "path": "/api/test", "limit": 100, "period": 60}
+        response = await client.post(f"{create_rl_url}?tier_target_id={tier_target_id}", json=rl_data)
+        rate_limit_id = response.json()["id"]
+
+        # Delete the rate limit
+        delete_url = fastapi_app.url_path_for("delete_rate_limit", rate_limit_id=rate_limit_id)
+        response = await client.delete(delete_url)
+
+        assert response.status_code == 204
+
+        # Verify it's deleted
+        get_url = fastapi_app.url_path_for("get_rate_limit", rate_limit_id=rate_limit_id)
+        get_response = await client.get(get_url)
+        assert get_response.status_code == 404
 
 
 @pytest.mark.anyio

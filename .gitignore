@@ -148,3 +148,6 @@ cython_debug/
 
 # Angular build output for production
 publish/
+
+# Logs
+logs/

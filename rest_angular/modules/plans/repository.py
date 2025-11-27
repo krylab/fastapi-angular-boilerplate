@@ -13,14 +13,9 @@ class TierRepository(BaseRepository[Tier, int]):
         super().__init__(Tier, uow)
 
     async def get_by_name(self, name: str, eager_load: list[str] | None = None) -> Tier | None:
-        await self._uow.check_cancelled()
         stmt = select(self._model_class).where(self._model_class.name == name)
-
         stmt = self._apply_eager_loading(stmt, eager_load)
-
         result = await self._execute(stmt)
-        await self._uow.check_cancelled()
-
         return result.scalar_one_or_none()
 
     async def get_with_targets(self, tier_id: int) -> Tier | None:
@@ -42,41 +37,29 @@ class TierTargetRepository(BaseRepository[TierTarget, int]):
     async def get_by_target(
         self, target_type: str, target_id: str, eager_load: list[str] | None = None
     ) -> TierTarget | None:
-        await self._uow.check_cancelled()
         stmt = select(self._model_class).where(
             self._model_class.target_type == target_type,
             self._model_class.target_id == target_id,
             self._model_class.is_active == True,
         )
-
         stmt = self._apply_eager_loading(stmt, eager_load)
-
         result = await self._execute(stmt)
-        await self._uow.check_cancelled()
         return result.scalar_one_or_none()
 
     async def get_by_tier(self, tier_id: int, eager_load: list[str] | None = None) -> list[TierTarget]:
-        await self._uow.check_cancelled()
         stmt = select(self._model_class).where(
             self._model_class.tier_id == tier_id, self._model_class.is_active == True
         )
-
         stmt = self._apply_eager_loading(stmt, eager_load)
-
         result = await self._execute(stmt)
-        await self._uow.check_cancelled()
         return list(result.scalars().all())
 
     async def get_by_target_type(self, target_type: str, eager_load: list[str] | None = None) -> list[TierTarget]:
-        await self._uow.check_cancelled()
         stmt = select(self._model_class).where(
             self._model_class.target_type == target_type, self._model_class.is_active == True
         )
-
         stmt = self._apply_eager_loading(stmt, eager_load)
-
         result = await self._execute(stmt)
-        await self._uow.check_cancelled()
         return list(result.scalars().all())
 
     async def get_with_rate_limits(self, tier_target_id: int) -> TierTarget | None:
@@ -98,36 +81,26 @@ class RateLimitRepository(BaseRepository[RateLimit, int]):
     async def get_by_tier_target_and_path(
         self, tier_target_id: int, path: str, eager_load: list[str] | None = None
     ) -> RateLimit | None:
-        await self._uow.check_cancelled()
         stmt = select(self._model_class).where(
             self._model_class.tier_target_id == tier_target_id, self._model_class.path == path
         )
-
         stmt = self._apply_eager_loading(stmt, eager_load)
-
         result = await self._execute(stmt)
-        await self._uow.check_cancelled()
         return result.scalar_one_or_none()
 
     async def get_by_tier_target(self, tier_target_id: int, eager_load: list[str] | None = None) -> list[RateLimit]:
-        await self._uow.check_cancelled()
         stmt = select(self._model_class).where(self._model_class.tier_target_id == tier_target_id)
-
         stmt = self._apply_eager_loading(stmt, eager_load)
-
         result = await self._execute(stmt)
-        await self._uow.check_cancelled()
         return list(result.scalars().all())
 
     async def get_by_tier_and_path(self, tier_id: int, path: str) -> RateLimit | None:
-        await self._uow.check_cancelled()
         stmt = (
             select(self._model_class)
             .join(TierTarget)
             .where(TierTarget.tier_id == tier_id, self._model_class.path == path)
         )
         result = await self._execute(stmt)
-        await self._uow.check_cancelled()
         return result.scalar_one_or_none()
 
 

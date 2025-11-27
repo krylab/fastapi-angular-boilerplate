@@ -15,6 +15,7 @@ from lelab_common.auth import get_current_user, get_oauth2_current_user
 
 from .config import settings
 from .infra.monitor.otel import setup_opentelemetry, stop_opentelemetry
+from .logging import configure_logging
 from .modules.plans import routes as plans_routes
 from .modules.system.routes import router as system_router
 from .modules.users import user_routes
@@ -30,6 +31,7 @@ def create_app() -> FastAPI:
 
     @asynccontextmanager
     async def lifespan(app: FastAPI):
+        configure_logging()
         app.state.settings = settings
         setup_opentelemetry(app)
         yield

@@ -1,4 +1,3 @@
-import asyncio
 from types import TracebackType
 from typing import Annotated, Any, AsyncGenerator, Coroutine, TypeVar
 
@@ -31,9 +30,6 @@ class UnitOfWork:
         else:
             await self.session.commit()
         await self.session.close()
-
-    async def check_cancelled(self) -> None:
-        await self._context.throw_if_cancelled()
 
     async def wait_for(self, coro: Coroutine[Any, Any, T], timeout: float | None = None) -> T:
         return await self._context.wait_for(coro, timeout)

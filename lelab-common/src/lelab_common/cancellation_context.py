@@ -13,10 +13,6 @@ class CancellationContext:
     def cancel(self) -> None:
         self._cancel_event.set()
 
-    async def throw_if_cancelled(self) -> None:
-        if self._cancel_event.is_set():
-            raise asyncio.CancelledError()
-
     async def wait_for(self, coro: Coroutine[Any, Any, T], timeout: float | None = None) -> T:
         task: asyncio.Task[T] = asyncio.create_task(coro)
         cancel_task: asyncio.Task[bool] = asyncio.create_task(self._cancel_event.wait())
@@ -35,7 +31,7 @@ class CancellationContext:
 
         for t in pending:
             t.cancel()
-        raise asyncio.TimeoutError("Operation timed out")
+        raise asyncio.CancelledError("Cancel because of timeout")
 
 
 async def get_cancellation_context(request: Request) -> CancellationContext:
