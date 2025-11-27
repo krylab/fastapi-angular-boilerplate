@@ -102,12 +102,13 @@ For example if you see in your `rest_angular/config.py` a variable named like
 `random_parameter`, you should provide the "RANDOM_PARAMETER"
 variable to configure the value.
 
-An example of .env file:
+An example of .env file (you can quickly create it using `cp .env.example .env`):
 
 ```bash
 RELOAD="True"
 PORT="8000"
 ENVIRONMENT="dev"
+LOG_LEVEL="DEBUG"
 DB_HOST="localhost"
 DB_USER="rest_angular"
 DB_PASSWORD="rest_angular"
