@@ -114,9 +114,33 @@ interface CreateRateLimitApiPlansRateLimitsPostParams {
 
 type CreateTierApiPlansTiersPostData = TierRead;
 
+type CreateTierTargetApiPlansTierTargetsPostData = TierTargetRead;
+
+interface CreateTierTargetApiPlansTierTargetsPostParams {
+  /** Tier Id */
+  tier_id: number;
+}
+
 type DeleteRateLimitApiPlansRateLimitsRateLimitIdDeleteData = any;
 
+interface DeleteRateLimitApiPlansRateLimitsRateLimitIdDeleteParams {
+  /** Rate Limit Id */
+  rateLimitId: number;
+}
+
 type DeleteTierApiPlansTiersTierIdDeleteData = any;
+
+interface DeleteTierApiPlansTiersTierIdDeleteParams {
+  /** Tier Id */
+  tierId: number;
+}
+
+type DeleteTierTargetApiPlansTierTargetsTierTargetIdDeleteData = any;
+
+interface DeleteTierTargetApiPlansTierTargetsTierTargetIdDeleteParams {
+  /** Tier Target Id */
+  tierTargetId: number;
+}
 
 /** ErrorModel */
 interface ErrorModel {
@@ -152,10 +176,30 @@ interface ErrorResponse {
 
 type GetRateLimitApiPlansRateLimitsRateLimitIdGetData = RateLimitRead;
 
+interface GetRateLimitApiPlansRateLimitsRateLimitIdGetParams {
+  /** Rate Limit Id */
+  rateLimitId: number;
+}
+
 /** Response Get Rate Limits Api Plans Rate Limits Get */
 type GetRateLimitsApiPlansRateLimitsGetData = RateLimitRead[];
 
 type GetTierApiPlansTiersTierIdGetData = TierRead;
+
+interface GetTierApiPlansTiersTierIdGetParams {
+  /** Tier Id */
+  tierId: number;
+}
+
+type GetTierTargetApiPlansTierTargetsTierTargetIdGetData = TierTargetRead;
+
+interface GetTierTargetApiPlansTierTargetsTierTargetIdGetParams {
+  /** Tier Target Id */
+  tierTargetId: number;
+}
+
+/** Response Get Tier Targets Api Plans Tier Targets Get */
+type GetTierTargetsApiPlansTierTargetsGetData = TierTargetRead[];
 
 /** Response Get Tiers Api Plans Tiers Get */
 type GetTiersApiPlansTiersGetData = TierRead[];
@@ -250,6 +294,63 @@ interface TierRead {
   name: string;
 }
 
+/** TierTargetCreate */
+interface TierTargetCreate {
+  /**
+   * Is Active
+   * @default true
+   */
+  is_active?: boolean;
+  /** Name */
+  name?: string | null;
+  /** Target Id */
+  target_id: string;
+  /**
+   * Target Type
+   * U=User, A=App, T=Tenant
+   */
+  target_type: string;
+}
+
+/** TierTargetRead */
+interface TierTargetRead {
+  /**
+   * Created At
+   * @format date-time
+   */
+  created_at: string;
+  /** Id */
+  id: number;
+  /**
+   * Is Active
+   * @default true
+   */
+  is_active?: boolean;
+  /** Name */
+  name?: string | null;
+  /** Target Id */
+  target_id: string;
+  /**
+   * Target Type
+   * U=User, A=App, T=Tenant
+   */
+  target_type: string;
+  /** Tier Id */
+  tier_id: number;
+}
+
+/** TierTargetUpdate */
+interface TierTargetUpdate {
+  /** Is Active */
+  is_active?: boolean | null;
+  /** Name */
+  name?: string | null;
+  /** Target Id */
+  target_id?: string | null;
+  /** Target Type */
+  target_type?: string | null;
+}
+
 /** TierUpdate */
 interface TierUpdate {
   /** Name */
@@ -258,7 +359,24 @@ interface TierUpdate {
 
 type UpdateRateLimitApiPlansRateLimitsRateLimitIdPutData = RateLimitRead;
 
+interface UpdateRateLimitApiPlansRateLimitsRateLimitIdPutParams {
+  /** Rate Limit Id */
+  rateLimitId: number;
+}
+
 type UpdateTierApiPlansTiersTierIdPutData = TierRead;
+
+interface UpdateTierApiPlansTiersTierIdPutParams {
+  /** Tier Id */
+  tierId: number;
+}
+
+type UpdateTierTargetApiPlansTierTargetsTierTargetIdPutData = TierTargetRead;
+
+interface UpdateTierTargetApiPlansTierTargetsTierTargetIdPutParams {
+  /** Tier Target Id */
+  tierTargetId: number;
+}
 
 /**
  * UserCreate
@@ -342,11 +460,26 @@ type UsersCurrentUserApiUsersMeGetData = UserRead;
 
 type UsersDeleteUserApiUsersIdDeleteData = any;
 
+interface UsersDeleteUserApiUsersIdDeleteParams {
+  /** Id */
+  id: string;
+}
+
 type UsersPatchCurrentUserApiUsersMePatchData = UserRead;
 
 type UsersPatchUserApiUsersIdPatchData = UserRead;
 
+interface UsersPatchUserApiUsersIdPatchParams {
+  /** Id */
+  id: string;
+}
+
 type UsersUserApiUsersIdGetData = UserRead;
+
+interface UsersUserApiUsersIdGetParams {
+  /** Id */
+  id: string;
+}
 
 type VerifyRequestTokenApiAuthRequestVerifyTokenPostData = any;
 
@@ -516,6 +649,48 @@ export type DeleteTiersByTierIdInput = {
 
 /** Result type for deleteTiersByTierId method */
 export type DeleteTiersByTierIdResult = DeleteTierApiPlansTiersTierIdDeleteData;
+
+/** Input type for getTierTargets method */
+export type GetTierTargetsInput = void;
+
+/** Result type for getTierTargets method */
+export type GetTierTargetsResult = GetTierTargetsApiPlansTierTargetsGetData;
+
+/** Input type for postTierTargets method */
+export type PostTierTargetsInput = TierTargetCreate;
+
+/** Result type for postTierTargets method */
+export type PostTierTargetsResult = CreateTierTargetApiPlansTierTargetsPostData;
+
+/** Input type for getTierTargetsByTierTargetId method */
+export type GetTierTargetsByTierTargetIdInput = {
+  /** tierTargetId */
+  tierTargetId: number;
+};
+
+/** Result type for getTierTargetsByTierTargetId method */
+export type GetTierTargetsByTierTargetIdResult =
+  GetTierTargetApiPlansTierTargetsTierTargetIdGetData;
+
+/** Input type for putTierTargetsByTierTargetId method */
+export type PutTierTargetsByTierTargetIdInput = {
+  /** tierTargetId */
+  tierTargetId: number;
+} & TierTargetUpdate;
+
+/** Result type for putTierTargetsByTierTargetId method */
+export type PutTierTargetsByTierTargetIdResult =
+  UpdateTierTargetApiPlansTierTargetsTierTargetIdPutData;
+
+/** Input type for deleteTierTargetsByTierTargetId method */
+export type DeleteTierTargetsByTierTargetIdInput = {
+  /** tierTargetId */
+  tierTargetId: number;
+};
+
+/** Result type for deleteTierTargetsByTierTargetId method */
+export type DeleteTierTargetsByTierTargetIdResult =
+  DeleteTierTargetApiPlansTierTargetsTierTargetIdDeleteData;
 
 /** Input type for getRateLimits method */
 export type GetRateLimitsInput = void;
