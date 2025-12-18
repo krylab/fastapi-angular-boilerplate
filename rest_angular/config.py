@@ -1,9 +1,6 @@
-from functools import cached_property
-
 from lelab_common import AppSettings
 from pydantic import Field
 from pydantic_settings import SettingsConfigDict
-from yarl import URL
 
 from .infra.bus.settings import KafkaSettings
 from .infra.cache.settings import RedisSettings

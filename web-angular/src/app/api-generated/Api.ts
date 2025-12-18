@@ -8,7 +8,7 @@
  */
 
 import { httpResource } from "@angular/common/http";
-import { Injectable, Signal } from "@angular/core";
+import { Injectable } from "@angular/core";
 import * as Types from "./data-contracts";
 
 /**
@@ -26,10 +26,8 @@ export class Api {
    * @response `200` `HealthCheckApiHealthGetData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  health = (trigger?: Signal<any>, host?: string) => {
+  health = (host?: string) => {
     return httpResource<Types.HealthResult>(() => {
-      if (!trigger?.()) return undefined;
-
       const url = host ? `${host}/api/health` : "/api/health";
 
       return {

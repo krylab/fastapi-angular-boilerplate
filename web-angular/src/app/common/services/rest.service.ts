@@ -50,7 +50,6 @@ export class RestService {
       httpOptions.params = options.params;
     }
 
-    // Add skip error handling header if specified
     if (options?.skipErrorHandling) {
       if (!httpOptions.headers) {
         httpOptions.headers = new HttpHeaders();

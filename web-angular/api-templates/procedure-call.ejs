@@ -109,13 +109,11 @@ const methodResultType = `Types.${resultTypeName}`;
 
  * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
  */
-<% if (isValidIdentifier(simpleMethodName)) { %><%~ simpleMethodName %><% } else { %>"<%~ simpleMethodName %>"<% } %> = <% if (hasParams) { %>(params: Signal<<%~ methodInputType %> | undefined>, host?: string)<% } else { %>(trigger?: Signal<any>, host?: string)<% } %> => {
+<% if (isValidIdentifier(simpleMethodName)) { %><%~ simpleMethodName %><% } else { %>"<%~ simpleMethodName %>"<% } %> = <% if (hasParams) { %>(params: Signal<<%~ methodInputType %> | undefined>, host?: string)<% } else { %>(host?: string)<% } %> => {
   return httpResource<% if (methodResultType && methodResultType !== 'void' && methodResultType !== 'any') { %><<%~ methodResultType %>><% } %>(() => {
     <% if (hasParams) { %>
     const resolvedParams = params();
     if (!resolvedParams) return undefined;
-    <% } else { %>
-    if (!trigger?.()) return undefined;
     <% } %>
     
     <% if (pathParams.length > 0) { %>

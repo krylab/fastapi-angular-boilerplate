@@ -5,7 +5,7 @@ from fastapi import Depends
 from .models import CurrentUser
 
 
-def get_current_user() -> CurrentUser:
+def get_current_user() -> CurrentUser | None:
     """Abstract dependency for getting the current user"""
     raise NotImplementedError("Please override get_current_user dependency when initializing the app")
 
@@ -20,6 +20,6 @@ def get_jwt_decode_options() -> dict[str, Any] | None:
     return None
 
 
-CurrentUserDep = Annotated[CurrentUser, Depends(get_current_user)]
+CurrentUserDep = Annotated[CurrentUser | None, Depends(get_current_user)]
 PayloadMapperDep = Annotated[Callable[[dict[str, Any]], CurrentUser], Depends(map_payload_to_current_user)]
 JwtDecodeOptionsDep = Annotated[dict[str, Any] | None, Depends(get_jwt_decode_options)]

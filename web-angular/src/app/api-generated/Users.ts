@@ -28,10 +28,8 @@ export class Users {
    * @response `200` `UsersCurrentUserApiUsersMeGetData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  getMe = (trigger?: Signal<any>, host?: string) => {
+  getMe = (host?: string) => {
     return httpResource<Types.GetMeResult>(() => {
-      if (!trigger?.()) return undefined;
-
       const url = host ? `${host}/api/users/me` : "/api/users/me";
 
       return {

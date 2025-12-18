@@ -199,10 +199,8 @@ export class Auth {
    * @response `200` `AuthJwtLogoutApiAuthJwtLogoutPostData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  logoutJwt = (trigger?: Signal<any>, host?: string) => {
+  logoutJwt = (host?: string) => {
     return httpResource<Types.LogoutJwtResult>(() => {
-      if (!trigger?.()) return undefined;
-
       const url = host ? `${host}/api/auth/jwt/logout` : "/api/auth/jwt/logout";
 
       return {
@@ -255,10 +253,8 @@ export class Auth {
    * @response `204` `void` No Content
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  logoutCookie = (trigger?: Signal<any>, host?: string) => {
+  logoutCookie = (host?: string) => {
     return httpResource<Types.LogoutCookieResult>(() => {
-      if (!trigger?.()) return undefined;
-
       const url = host
         ? `${host}/api/auth/cookie/logout`
         : "/api/auth/cookie/logout";
@@ -280,10 +276,8 @@ export class Auth {
    * @response `200` `OauthGoogleJwtAuthorizeApiAuthGoogleAuthorizeGetData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  authorize = (trigger?: Signal<any>, host?: string) => {
+  authorize = (host?: string) => {
     return httpResource<Types.AuthorizeResult>(() => {
-      if (!trigger?.()) return undefined;
-
       const url = host
         ? `${host}/api/auth/google/authorize`
         : "/api/auth/google/authorize";

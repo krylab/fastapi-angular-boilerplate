@@ -91,39 +91,6 @@ function cleanDirectory(dirPath) {
   }
 }
 
-function removeDirectoryContents(dirPath) {
-  try {
-    if (!fs.existsSync(dirPath)) {
-      console.log(`⚠️  Directory not found (skipping cleanup): ${dirPath}`);
-      return;
-    }
-
-    console.log(`🗑️  Removing all contents from: ${path.relative(process.cwd(), dirPath)}`);
-
-    const files = fs.readdirSync(dirPath);
-
-    files.forEach(file => {
-      const filePath = path.join(dirPath, file);
-      const stat = fs.statSync(filePath);
-
-      if (stat.isDirectory()) {
-        // Recursively remove subdirectories
-        fs.rmSync(filePath, { recursive: true, force: true });
-        console.log(`✓ Removed directory: ${path.relative(process.cwd(), filePath)}`);
-      } else {
-        // Remove files
-        fs.unlinkSync(filePath);
-        console.log(`✓ Removed file: ${path.relative(process.cwd(), filePath)}`);
-      }
-    });
-
-    console.log(`✨ Directory cleanup completed: ${path.relative(process.cwd(), dirPath)}`);
-  } catch (error) {
-    console.error(`✗ Error removing directory contents ${dirPath}:`, error.message);
-    throw error;
-  }
-}
-
 // Convert config to swagger-typescript-api options
 function convertConfigToOptions(config) {
   // Map CLI-style config keys to camelCase for generateApi function
@@ -196,7 +163,7 @@ function convertConfigToOptions(config) {
   return options;
 }
 
-async function generateAndCleanApi() {
+async function processGeneration() {
   try {
     console.log("🚀 Starting API generation...");
 
@@ -217,10 +184,6 @@ async function generateAndCleanApi() {
     if (!fs.existsSync(outputDir)) {
       fs.mkdirSync(outputDir, { recursive: true });
       console.log(`✓ Created output directory: ${outputDir}`);
-    } else {
-      // Clean existing contents before generating new files
-      console.log("🧹 Cleaning existing generated files...");
-      removeDirectoryContents(outputDir);
     }
 
     // Generate API using swagger-typescript-api module
@@ -284,7 +247,7 @@ Usage:
 Options:
   --help, -h     Show this help message
   --debug        Enable debug output
-  --clean-only   Only run the cleaning process (skip generation)
+  --clean-only   Only run the cleaning default swagger-typescript-api stuff (unnecessary block)
 
 Configuration:
   Reads from generate-api.config.js in the project root.
@@ -317,7 +280,7 @@ Examples:
     return;
   }
 
-  await generateAndCleanApi();
+  await processGeneration();
 }
 
 // Run if called directly
@@ -328,11 +291,4 @@ if (require.main === module) {
   });
 }
 
-module.exports = {
-  generateAndCleanApi,
-  cleanDirectory,
-  cleanFile,
-  removeDirectoryContents,
-  loadConfig,
-  convertConfigToOptions,
-};
+module.exports = {};

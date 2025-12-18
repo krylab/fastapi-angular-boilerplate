@@ -1,11 +1,8 @@
-import os
-import time
 from contextlib import asynccontextmanager
 from pathlib import Path
 
 from fastapi import APIRouter, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.staticfiles import StaticFiles
 from lelab_common import (
     RequestTraceMiddleware,
     get_configuration,

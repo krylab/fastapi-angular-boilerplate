@@ -4,7 +4,6 @@ import sys
 from datetime import datetime
 from logging.handlers import TimedRotatingFileHandler
 from pathlib import Path
-from typing import Optional
 from zoneinfo import ZoneInfo
 
 
@@ -46,7 +45,7 @@ class ColoredISO8601Formatter(ISO8601Formatter):
 
 def setup_logger(
     log_level: str = "INFO",
-    log_dir: Optional[str | Path] = "logs",
+    log_dir: str | Path = "logs",
     log_filename: str = "app.log",
     rotation: str = "midnight",
     retention_days: int = 7,

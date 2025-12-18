@@ -27,10 +27,8 @@ export class Plans {
    * @response `200` `GetTiersApiPlansTiersGetData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  getTiers = (trigger?: Signal<any>, host?: string) => {
+  getTiers = (host?: string) => {
     return httpResource<Types.GetTiersResult>(() => {
-      if (!trigger?.()) return undefined;
-
       const url = host ? `${host}/api/plans/tiers` : "/api/plans/tiers";
 
       return {
@@ -169,10 +167,8 @@ export class Plans {
    * @response `200` `GetTierTargetsApiPlansTierTargetsGetData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  getTierTargets = (trigger?: Signal<any>, host?: string) => {
+  getTierTargets = (host?: string) => {
     return httpResource<Types.GetTierTargetsResult>(() => {
-      if (!trigger?.()) return undefined;
-
       const url = host
         ? `${host}/api/plans/tier-targets`
         : "/api/plans/tier-targets";
@@ -324,10 +320,8 @@ export class Plans {
    * @response `200` `GetRateLimitsApiPlansRateLimitsGetData` Successful Response
    * @param host Optional base URL host (e.g., 'https://api.example.com') to override the default relative URL
    */
-  getRateLimits = (trigger?: Signal<any>, host?: string) => {
+  getRateLimits = (host?: string) => {
     return httpResource<Types.GetRateLimitsResult>(() => {
-      if (!trigger?.()) return undefined;
-
       const url = host
         ? `${host}/api/plans/rate-limits`
         : "/api/plans/rate-limits";

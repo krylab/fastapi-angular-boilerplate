@@ -1,15 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { FooterComponent } from '../../components/footers/footer/footer.component';
-import { AuthNavbarComponent } from '../../components/navbars/auth-navbar/auth-navbar.component';
+import { FooterComponent } from '../../common/components/footers/footer/footer.component';
+import { AuthNavbarComponent } from '../../common/components/navbars/auth-navbar/auth-navbar.component';
 
 @Component({
   selector: 'app-landing',
   templateUrl: './landing.component.html',
   imports: [RouterLink, AuthNavbarComponent, FooterComponent],
 })
-export class LandingComponent implements OnInit {
-  constructor() {}
-
-  ngOnInit(): void {}
-}
+export class LandingComponent {}

@@ -1,14 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { CardProfileComponent } from '../../../components/cards/card-profile/card-profile.component';
-import { CardSettingsComponent } from '../../../components/cards/card-settings/card-settings.component';
+import { Component } from '@angular/core';
+import { CardComponent } from '../../../common/components/card/card.component';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.component.html',
-  imports: [CardSettingsComponent, CardProfileComponent],
+  imports: [CardComponent],
 })
-export class SettingsComponent implements OnInit {
-  constructor() {}
-
-  ngOnInit(): void {}
-}
+export class SettingsComponent {}

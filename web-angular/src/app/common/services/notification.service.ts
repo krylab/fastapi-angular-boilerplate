@@ -27,7 +27,7 @@ export class NotificationService {
       message,
       action,
       type: 'info',
-      duration: 8000, // 8 seconds default (increased from 5)
+      duration: 5000,
       ...config,
     };
 
@@ -69,6 +69,6 @@ export class NotificationService {
   }
 
   private generateId(): string {
-    return Math.random().toString(36).substr(2, 9);
+    return Math.random().toString(36).substring(2, 9);
   }
 }

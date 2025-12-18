@@ -1,13 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { MapExampleComponent } from '../../../components/maps/map-example/map-example.component';
+import { Component } from '@angular/core';
+import { CardComponent } from '../../../common/components/card/card.component';
 
 @Component({
   selector: 'app-maps',
   templateUrl: './maps.component.html',
-  imports: [MapExampleComponent],
+  imports: [CardComponent],
 })
-export class MapsComponent implements OnInit {
-  constructor() {}
-
-  ngOnInit(): void {}
-}
+export class MapsComponent {}

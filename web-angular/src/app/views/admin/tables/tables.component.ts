@@ -1,13 +1,9 @@
-import { Component, OnInit } from '@angular/core';
-import { CardTableComponent } from '../../../components/cards/card-table/card-table.component';
+import { Component } from '@angular/core';
+import { CardComponent } from '../../../common/components/card/card.component';
 
 @Component({
   selector: 'app-tables',
   templateUrl: './tables.component.html',
-  imports: [CardTableComponent],
+  imports: [CardComponent],
 })
-export class TablesComponent implements OnInit {
-  constructor() {}
-
-  ngOnInit(): void {}
-}
+export class TablesComponent {}

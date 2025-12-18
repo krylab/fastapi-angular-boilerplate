@@ -4,7 +4,7 @@ module.exports = {
 
   // Output configuration
   output: "src/app/api-generated",
-  name: "ApiClient.ts",
+  name: "ApiClient.ts", // Won't generate because using angular httpResource
 
   // Templates and naming
   templates: "api-templates",
@@ -31,7 +31,7 @@ module.exports = {
   "unwrap-response-data": true,
 
   // Cleanup and sorting
-  "clean-output": false, // Handle cleanup manually in script
+  "clean-output": true,
   "sort-types": true,
 
   // File extensions and naming
