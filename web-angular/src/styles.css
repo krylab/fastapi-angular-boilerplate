@@ -1,3 +1,33 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
+
+/*
+ * The Notus template uses Tailwind v3 color families that were removed from the
+ * default palette in Tailwind v4 (`blueGray` -> `slate`, `lightBlue` -> `sky`).
+ * Re-register them here so the existing `*-blueGray-*` / `*-lightBlue-*` utility
+ * classes (buttons, cards, text, borders, ...) generate CSS again.
+ */
+@theme {
+  --color-blueGray-50: var(--color-slate-50);
+  --color-blueGray-100: var(--color-slate-100);
+  --color-blueGray-200: var(--color-slate-200);
+  --color-blueGray-300: var(--color-slate-300);
+  --color-blueGray-400: var(--color-slate-400);
+  --color-blueGray-500: var(--color-slate-500);
+  --color-blueGray-600: var(--color-slate-600);
+  --color-blueGray-700: var(--color-slate-700);
+  --color-blueGray-800: var(--color-slate-800);
+  --color-blueGray-900: var(--color-slate-900);
+
+  --color-lightBlue-50: var(--color-sky-50);
+  --color-lightBlue-100: var(--color-sky-100);
+  --color-lightBlue-200: var(--color-sky-200);
+  --color-lightBlue-300: var(--color-sky-300);
+  --color-lightBlue-400: var(--color-sky-400);
+  --color-lightBlue-500: var(--color-sky-500);
+  --color-lightBlue-600: var(--color-sky-600);
+  --color-lightBlue-700: var(--color-sky-700);
+  --color-lightBlue-800: var(--color-sky-800);
+  --color-lightBlue-900: var(--color-sky-900);
+}
