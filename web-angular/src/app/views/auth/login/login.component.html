@@ -28,7 +28,7 @@
           <div class="text-blueGray-400 text-center mb-3 font-bold">
             <small>Or sign in with credentials</small>
           </div>
-          <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <form (submit)="onSubmit($event)">
             @if (errorMessage()) {
               <div class="bg-red-500 text-white px-6 py-4 rounded mb-4 text-center text-sm">
                 {{ errorMessage() }}
@@ -40,13 +40,15 @@
               <input
                 id="email"
                 type="email"
-                formControlName="email"
+                [formField]="loginForm.email"
                 class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                [class.border-red-500]="getFieldError('email')"
+                [class.border-red-500]="loginForm.email().touched() && loginForm.email().invalid()"
                 placeholder="Email"
               />
-              @if (getFieldError("email")) {
-                <div class="text-red-500 text-xs mt-1">{{ getFieldError("email") }}</div>
+              @if (loginForm.email().touched()) {
+                @for (error of loginForm.email().errors(); track error.kind) {
+                  <div class="text-red-500 text-xs mt-1">{{ error.message }}</div>
+                }
               }
             </div>
 
@@ -55,13 +57,15 @@
               <input
                 id="password"
                 type="password"
-                formControlName="password"
+                [formField]="loginForm.password"
                 class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                [class.border-red-500]="getFieldError('password')"
+                [class.border-red-500]="loginForm.password().touched() && loginForm.password().invalid()"
                 placeholder="Password"
               />
-              @if (getFieldError("password")) {
-                <div class="text-red-500 text-xs mt-1">{{ getFieldError("password") }}</div>
+              @if (loginForm.password().touched()) {
+                @for (error of loginForm.password().errors(); track error.kind) {
+                  <div class="text-red-500 text-xs mt-1">{{ error.message }}</div>
+                }
               }
             </div>
             <div>
@@ -69,7 +73,7 @@
                 <input
                   id="customCheckLogin"
                   type="checkbox"
-                  formControlName="rememberMe"
+                  [formField]="loginForm.rememberMe"
                   class="form-checkbox border-0 text-blueGray-700 ml-1 w-5 h-5 ease-linear transition-all duration-150 rounded"
                 />
                 <span class="ml-2 text-sm font-semibold text-blueGray-600"> Remember me </span>

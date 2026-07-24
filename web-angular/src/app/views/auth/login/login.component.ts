@@ -1,55 +1,55 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { email, form, FormField, required } from '@angular/forms/signals';
 import { Router, RouterLink } from '@angular/router';
 import { AuthService } from '../../../common/services/auth.service';
 import { NotificationService } from '../../../common/services/notification.service';
+
+interface LoginModel {
+  email: string;
+  password: string;
+  rememberMe: boolean;
+}
 
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [ReactiveFormsModule, RouterLink],
+  imports: [FormField, RouterLink],
 })
 export class LoginComponent {
-  private fb = inject(FormBuilder);
   private authService = inject(AuthService);
   private router = inject(Router);
   private notificationService = inject(NotificationService);
 
-  loading = signal(false);
-  errorMessage = signal<string | null>(null);
+  readonly loading = signal(false);
+  readonly errorMessage = signal<string | null>(null);
 
-  loginForm: FormGroup = this.fb.group({
-    email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required]],
-    rememberMe: [false],
+  protected readonly loginModel = signal<LoginModel>({
+    email: '',
+    password: '',
+    rememberMe: false,
   });
 
-  getFieldError(fieldName: string): string | null {
-    const field = this.loginForm.get(fieldName);
-    if (field && field.invalid && (field.dirty || field.touched)) {
-      if (field.errors?.['required']) {
-        return `${fieldName === 'email' ? 'Email' : 'Password'} is required`;
-      }
-      if (field.errors?.['email']) {
-        return 'Please enter a valid email address';
-      }
-    }
-    return null;
-  }
+  protected readonly loginForm = form(this.loginModel, f => {
+    required(f.email, { message: 'Email is required' });
+    email(f.email, { message: 'Please enter a valid email address' });
+    required(f.password, { message: 'Password is required' });
+  });
 
-  onSubmit(): void {
-    if (this.loginForm.invalid) {
-      this.loginForm.markAllAsTouched();
+  onSubmit(event: Event): void {
+    event.preventDefault();
+
+    if (this.loginForm().invalid()) {
+      this.loginForm().markAsTouched();
       return;
     }
 
     this.loading.set(true);
     this.errorMessage.set(null);
 
-    const { email, password } = this.loginForm.getRawValue();
+    const { email: emailValue, password } = this.loginModel();
 
-    this.authService.login(email, password).subscribe({
+    this.authService.login(emailValue, password).subscribe({
       next: () => {
         this.loading.set(false);
         this.router.navigate(['/admin/dashboard']);

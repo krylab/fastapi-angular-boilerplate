@@ -28,11 +28,18 @@
           <div class="text-blueGray-400 text-center mb-3 font-bold">
             <small>Or sign up with credentials</small>
           </div>
-          <form [formGroup]="registerForm" (ngSubmit)="onSubmit()">
+          <form (submit)="onSubmit($event)">
             <!-- Success Message -->
-            @if (registrationSuccess) {
+            @if (registrationSuccess()) {
               <div class="bg-green-500 text-white px-6 py-4 rounded mb-4 text-center">
                 <strong>Registration successful!</strong> Your account has been created.
+              </div>
+            }
+
+            <!-- Error Message -->
+            @if (registrationError()) {
+              <div class="bg-red-500 text-white px-6 py-4 rounded mb-4 text-center text-sm">
+                {{ registrationError() }}
               </div>
             }
 
@@ -41,15 +48,15 @@
               <input
                 id="email"
                 type="email"
-                formControlName="email"
+                [formField]="registerForm.email"
                 class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                [class.border-red-500]="getFieldError('email')"
+                [class.border-red-500]="registerForm.email().touched() && registerForm.email().invalid()"
                 placeholder="Email"
               />
-              @if (getFieldError("email")) {
-                <div class="text-red-500 text-xs mt-1">
-                  {{ getFieldError("email") }}
-                </div>
+              @if (registerForm.email().touched()) {
+                @for (error of registerForm.email().errors(); track error.kind) {
+                  <div class="text-red-500 text-xs mt-1">{{ error.message }}</div>
+                }
               }
             </div>
 
@@ -58,15 +65,15 @@
               <input
                 id="password"
                 type="password"
-                formControlName="password"
+                [formField]="registerForm.password"
                 class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                [class.border-red-500]="getFieldError('password')"
+                [class.border-red-500]="registerForm.password().touched() && registerForm.password().invalid()"
                 placeholder="Password"
               />
-              @if (getFieldError("password")) {
-                <div class="text-red-500 text-xs mt-1">
-                  {{ getFieldError("password") }}
-                </div>
+              @if (registerForm.password().touched()) {
+                @for (error of registerForm.password().errors(); track error.kind) {
+                  <div class="text-red-500 text-xs mt-1">{{ error.message }}</div>
+                }
               }
             </div>
 
@@ -75,15 +82,15 @@
               <input
                 id="confirmPassword"
                 type="password"
-                formControlName="confirmPassword"
+                [formField]="registerForm.confirmPassword"
                 class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
-                [class.border-red-500]="getFieldError('confirmPassword')"
+                [class.border-red-500]="registerForm.confirmPassword().touched() && registerForm.confirmPassword().invalid()"
                 placeholder="Confirm Password"
               />
-              @if (getFieldError("confirmPassword")) {
-                <div class="text-red-500 text-xs mt-1">
-                  {{ getFieldError("confirmPassword") }}
-                </div>
+              @if (registerForm.confirmPassword().touched()) {
+                @for (error of registerForm.confirmPassword().errors(); track error.kind) {
+                  <div class="text-red-500 text-xs mt-1">{{ error.message }}</div>
+                }
               }
             </div>
 
@@ -92,7 +99,7 @@
                 <input
                   id="agreeToPolicy"
                   type="checkbox"
-                  formControlName="agreeToPolicy"
+                  [formField]="registerForm.agreeToPolicy"
                   class="form-checkbox border-0 text-blueGray-700 ml-1 w-5 h-5 ease-linear transition-all duration-150 rounded"
                 />
                 <span class="ml-2 text-sm font-semibold text-blueGray-600">
@@ -100,10 +107,10 @@
                   <a href="javascript:void(0)" class="text-red-600"> Privacy Policy </a>
                 </span>
               </label>
-              @if (getFieldError("agreeToPolicy")) {
-                <div class="text-red-500 text-xs mt-1">
-                  {{ getFieldError("agreeToPolicy") }}
-                </div>
+              @if (registerForm.agreeToPolicy().touched()) {
+                @for (error of registerForm.agreeToPolicy().errors(); track error.kind) {
+                  <div class="text-red-500 text-xs mt-1">{{ error.message }}</div>
+                }
               }
             </div>
 
