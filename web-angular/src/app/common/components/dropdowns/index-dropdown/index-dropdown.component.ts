@@ -1,10 +1,11 @@
-import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { Component, ElementRef, OnInit, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { createPopper } from '@popperjs/core';
 
 @Component({
   selector: 'app-index-dropdown',
   templateUrl: './index-dropdown.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [RouterLink],
 })
 export class IndexDropdownComponent implements OnInit {

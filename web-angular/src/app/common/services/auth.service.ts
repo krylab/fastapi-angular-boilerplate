@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject, Observable, throwError } from 'rxjs';
@@ -32,9 +32,12 @@ export class AuthService {
    * Authenticate user with email and password
    */
   login(email: string, password: string): Observable<any> {
-    const loginData = { email, password };
+    // fastapi-users' JWT login expects an OAuth2 form body (`username`/`password`)
+    // encoded as application/x-www-form-urlencoded, not JSON.
+    const body = new URLSearchParams({ username: email, password }).toString();
+    const headers = new HttpHeaders({ 'Content-Type': 'application/x-www-form-urlencoded' });
 
-    return this.http.post<any>(`${environment.apiUrl}/auth/login`, loginData).pipe(
+    return this.http.post<any>(`${environment.apiUrl}/api/auth/jwt/login`, body, { headers }).pipe(
       tap(response => {
         if (response.access_token) {
           this.setTokens(response.access_token, response.refresh_token);

@@ -1,4 +1,4 @@
-import { provideHttpClient, withInterceptors } from '@angular/common/http';
+import { provideHttpClient, withInterceptors, withXhr } from '@angular/common/http';
 import { ApplicationConfig, ErrorHandler, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { provideRouter } from '@angular/router';
 import { httpErrorInterceptor } from './common/interceptors';
@@ -12,6 +12,6 @@ export const appConfig: ApplicationConfig = {
     provideRouter(routes),
     { provide: ErrorHandler, useClass: AppErrorHandler },
     ErrorHandlerService,
-    provideHttpClient(withInterceptors([httpErrorInterceptor])),
+    provideHttpClient(withXhr(), withInterceptors([httpErrorInterceptor])),
   ],
 };

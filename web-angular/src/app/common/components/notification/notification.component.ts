@@ -1,9 +1,10 @@
-import { Component, input, OnDestroy, OnInit, output } from '@angular/core';
+import { Component, input, OnDestroy, OnInit, output, ChangeDetectionStrategy } from '@angular/core';
 import { NotificationData } from '../../services/notification.service';
 
 @Component({
   selector: 'app-notification',
   templateUrl: './notification.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   styleUrl: './notification.component.css',
 })
 export class NotificationComponent implements OnInit, OnDestroy {

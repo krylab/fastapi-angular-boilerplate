@@ -28,33 +28,52 @@
           <div class="text-blueGray-400 text-center mb-3 font-bold">
             <small>Or sign in with credentials</small>
           </div>
-          <form>
+          <form (submit)="onSubmit($event)">
+            @if (errorMessage()) {
+              <div class="bg-red-500 text-white px-6 py-4 rounded mb-4 text-center text-sm">
+                {{ errorMessage() }}
+              </div>
+            }
+
             <div class="relative w-full mb-3">
-              <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2" htmlFor="grid-password">
-                Email
-              </label>
+              <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2" for="email"> Email </label>
               <input
+                id="email"
                 type="email"
+                [formField]="loginForm.email"
                 class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                [class.border-red-500]="loginForm.email().touched() && loginForm.email().invalid()"
                 placeholder="Email"
               />
+              @if (loginForm.email().touched()) {
+                @for (error of loginForm.email().errors(); track error.kind) {
+                  <div class="text-red-500 text-xs mt-1">{{ error.message }}</div>
+                }
+              }
             </div>
 
             <div class="relative w-full mb-3">
-              <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2" htmlFor="grid-password">
-                Password
-              </label>
+              <label class="block uppercase text-blueGray-600 text-xs font-bold mb-2" for="password"> Password </label>
               <input
+                id="password"
                 type="password"
+                [formField]="loginForm.password"
                 class="border-0 px-3 py-3 placeholder-blueGray-300 text-blueGray-600 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full ease-linear transition-all duration-150"
+                [class.border-red-500]="loginForm.password().touched() && loginForm.password().invalid()"
                 placeholder="Password"
               />
+              @if (loginForm.password().touched()) {
+                @for (error of loginForm.password().errors(); track error.kind) {
+                  <div class="text-red-500 text-xs mt-1">{{ error.message }}</div>
+                }
+              }
             </div>
             <div>
               <label class="inline-flex items-center cursor-pointer">
                 <input
                   id="customCheckLogin"
                   type="checkbox"
+                  [formField]="loginForm.rememberMe"
                   class="form-checkbox border-0 text-blueGray-700 ml-1 w-5 h-5 ease-linear transition-all duration-150 rounded"
                 />
                 <span class="ml-2 text-sm font-semibold text-blueGray-600"> Remember me </span>
@@ -63,10 +82,15 @@
 
             <div class="text-center mt-6">
               <button
-                class="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150"
-                type="button"
+                class="bg-blueGray-800 text-white active:bg-blueGray-600 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full ease-linear transition-all duration-150 disabled:opacity-60 disabled:cursor-not-allowed"
+                type="submit"
+                [disabled]="loading()"
               >
-                Sign In
+                @if (loading()) {
+                  Signing In...
+                } @else {
+                  Sign In
+                }
               </button>
             </div>
           </form>

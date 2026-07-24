@@ -1,10 +1,11 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ChangeDetectionStrategy } from '@angular/core';
 import { NotificationData, NotificationService } from '../../services/notification.service';
 import { NotificationComponent } from '../notification/notification.component';
 
 @Component({
   selector: 'app-notification-container',
   imports: [NotificationComponent],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './notification-container.component.html',
 })
 export class NotificationContainerComponent {

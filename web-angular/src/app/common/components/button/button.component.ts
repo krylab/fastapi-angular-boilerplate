@@ -1,4 +1,4 @@
-import { Component, computed, input, output } from '@angular/core';
+import { Component, computed, input, output, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-button',
@@ -12,6 +12,7 @@ import { Component, computed, input, output } from '@angular/core';
       <ng-content />
     </button>
   `,
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [],
 })
 export class ButtonComponent {

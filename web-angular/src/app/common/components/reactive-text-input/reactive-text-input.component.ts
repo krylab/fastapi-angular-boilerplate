@@ -1,9 +1,10 @@
-import { Component, input } from '@angular/core';
+import { Component, input, ChangeDetectionStrategy } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-reactive-text-input',
   imports: [ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './reactive-text-input.component.html',
 })
 export class ReactiveTextInputComponent {
