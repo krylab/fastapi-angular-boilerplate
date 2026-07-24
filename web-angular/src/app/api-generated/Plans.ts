@@ -58,10 +58,15 @@ export class Plans {
 
       const url = host ? `${host}/api/plans/tiers` : "/api/plans/tiers";
 
+      const bodyPayload = resolvedParams;
+
       return {
         url,
         method: "POST",
-        body: resolvedParams,
+        body: bodyPayload,
+        headers: {
+          "Content-Type": "application/json",
+        },
       };
     });
   };
@@ -84,10 +89,9 @@ export class Plans {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
-      let url = host
-        ? `${host}/api/plans/tiers/{tier_id}`
-        : "/api/plans/tiers/{tier_id}";
-      url = url.replace("{tierId}", String(resolvedParams.tierId));
+      const url = host
+        ? `${host}/api/plans/tiers/${resolvedParams.tierId}`
+        : `/api/plans/tiers/${resolvedParams.tierId}`;
 
       return {
         url,
@@ -114,15 +118,23 @@ export class Plans {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
-      let url = host
-        ? `${host}/api/plans/tiers/{tier_id}`
-        : "/api/plans/tiers/{tier_id}";
-      url = url.replace("{tierId}", String(resolvedParams.tierId));
+      const url = host
+        ? `${host}/api/plans/tiers/${resolvedParams.tierId}`
+        : `/api/plans/tiers/${resolvedParams.tierId}`;
+
+      const bodyPayload = Object.fromEntries(
+        Object.entries(resolvedParams).filter(
+          ([key]) => !["tierId"].includes(key),
+        ),
+      );
 
       return {
         url,
         method: "PUT",
-        body: resolvedParams,
+        body: bodyPayload,
+        headers: {
+          "Content-Type": "application/json",
+        },
       };
     });
   };
@@ -145,10 +157,9 @@ export class Plans {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
-      let url = host
-        ? `${host}/api/plans/tiers/{tier_id}`
-        : "/api/plans/tiers/{tier_id}";
-      url = url.replace("{tierId}", String(resolvedParams.tierId));
+      const url = host
+        ? `${host}/api/plans/tiers/${resolvedParams.tierId}`
+        : `/api/plans/tiers/${resolvedParams.tierId}`;
 
       return {
         url,
@@ -203,18 +214,27 @@ export class Plans {
         : "/api/plans/tier-targets";
 
       const queryParams: Record<string, string> = {};
-      // Extract query parameters (excluding path parameters)
-      Object.entries(resolvedParams).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          queryParams[key] = String(value);
-        }
-      });
+      if (
+        resolvedParams.tier_id !== undefined &&
+        resolvedParams.tier_id !== null
+      ) {
+        queryParams["tier_id"] = String(resolvedParams.tier_id);
+      }
+
+      const bodyPayload = Object.fromEntries(
+        Object.entries(resolvedParams).filter(
+          ([key]) => !["tier_id"].includes(key),
+        ),
+      );
 
       return {
         url,
         method: "POST",
         params: queryParams,
-        body: resolvedParams,
+        body: bodyPayload,
+        headers: {
+          "Content-Type": "application/json",
+        },
       };
     });
   };
@@ -237,10 +257,9 @@ export class Plans {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
-      let url = host
-        ? `${host}/api/plans/tier-targets/{tier_target_id}`
-        : "/api/plans/tier-targets/{tier_target_id}";
-      url = url.replace("{tierTargetId}", String(resolvedParams.tierTargetId));
+      const url = host
+        ? `${host}/api/plans/tier-targets/${resolvedParams.tierTargetId}`
+        : `/api/plans/tier-targets/${resolvedParams.tierTargetId}`;
 
       return {
         url,
@@ -267,15 +286,23 @@ export class Plans {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
-      let url = host
-        ? `${host}/api/plans/tier-targets/{tier_target_id}`
-        : "/api/plans/tier-targets/{tier_target_id}";
-      url = url.replace("{tierTargetId}", String(resolvedParams.tierTargetId));
+      const url = host
+        ? `${host}/api/plans/tier-targets/${resolvedParams.tierTargetId}`
+        : `/api/plans/tier-targets/${resolvedParams.tierTargetId}`;
+
+      const bodyPayload = Object.fromEntries(
+        Object.entries(resolvedParams).filter(
+          ([key]) => !["tierTargetId"].includes(key),
+        ),
+      );
 
       return {
         url,
         method: "PUT",
-        body: resolvedParams,
+        body: bodyPayload,
+        headers: {
+          "Content-Type": "application/json",
+        },
       };
     });
   };
@@ -298,10 +325,9 @@ export class Plans {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
-      let url = host
-        ? `${host}/api/plans/tier-targets/{tier_target_id}`
-        : "/api/plans/tier-targets/{tier_target_id}";
-      url = url.replace("{tierTargetId}", String(resolvedParams.tierTargetId));
+      const url = host
+        ? `${host}/api/plans/tier-targets/${resolvedParams.tierTargetId}`
+        : `/api/plans/tier-targets/${resolvedParams.tierTargetId}`;
 
       return {
         url,
@@ -356,18 +382,27 @@ export class Plans {
         : "/api/plans/rate-limits";
 
       const queryParams: Record<string, string> = {};
-      // Extract query parameters (excluding path parameters)
-      Object.entries(resolvedParams).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          queryParams[key] = String(value);
-        }
-      });
+      if (
+        resolvedParams.tier_target_id !== undefined &&
+        resolvedParams.tier_target_id !== null
+      ) {
+        queryParams["tier_target_id"] = String(resolvedParams.tier_target_id);
+      }
+
+      const bodyPayload = Object.fromEntries(
+        Object.entries(resolvedParams).filter(
+          ([key]) => !["tier_target_id"].includes(key),
+        ),
+      );
 
       return {
         url,
         method: "POST",
         params: queryParams,
-        body: resolvedParams,
+        body: bodyPayload,
+        headers: {
+          "Content-Type": "application/json",
+        },
       };
     });
   };
@@ -390,10 +425,9 @@ export class Plans {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
-      let url = host
-        ? `${host}/api/plans/rate-limits/{rate_limit_id}`
-        : "/api/plans/rate-limits/{rate_limit_id}";
-      url = url.replace("{rateLimitId}", String(resolvedParams.rateLimitId));
+      const url = host
+        ? `${host}/api/plans/rate-limits/${resolvedParams.rateLimitId}`
+        : `/api/plans/rate-limits/${resolvedParams.rateLimitId}`;
 
       return {
         url,
@@ -420,15 +454,23 @@ export class Plans {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
-      let url = host
-        ? `${host}/api/plans/rate-limits/{rate_limit_id}`
-        : "/api/plans/rate-limits/{rate_limit_id}";
-      url = url.replace("{rateLimitId}", String(resolvedParams.rateLimitId));
+      const url = host
+        ? `${host}/api/plans/rate-limits/${resolvedParams.rateLimitId}`
+        : `/api/plans/rate-limits/${resolvedParams.rateLimitId}`;
+
+      const bodyPayload = Object.fromEntries(
+        Object.entries(resolvedParams).filter(
+          ([key]) => !["rateLimitId"].includes(key),
+        ),
+      );
 
       return {
         url,
         method: "PUT",
-        body: resolvedParams,
+        body: bodyPayload,
+        headers: {
+          "Content-Type": "application/json",
+        },
       };
     });
   };
@@ -451,10 +493,9 @@ export class Plans {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
-      let url = host
-        ? `${host}/api/plans/rate-limits/{rate_limit_id}`
-        : "/api/plans/rate-limits/{rate_limit_id}";
-      url = url.replace("{rateLimitId}", String(resolvedParams.rateLimitId));
+      const url = host
+        ? `${host}/api/plans/rate-limits/${resolvedParams.rateLimitId}`
+        : `/api/plans/rate-limits/${resolvedParams.rateLimitId}`;
 
       return {
         url,

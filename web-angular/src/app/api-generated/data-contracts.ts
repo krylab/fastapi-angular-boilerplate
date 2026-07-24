@@ -657,7 +657,10 @@ export type GetTierTargetsInput = void;
 export type GetTierTargetsResult = GetTierTargetsApiPlansTierTargetsGetData;
 
 /** Input type for postTierTargets method */
-export type PostTierTargetsInput = TierTargetCreate;
+export type PostTierTargetsInput = {
+  /** Tier Id */
+  tier_id: number;
+} & TierTargetCreate;
 
 /** Result type for postTierTargets method */
 export type PostTierTargetsResult = CreateTierTargetApiPlansTierTargetsPostData;
@@ -699,7 +702,10 @@ export type GetRateLimitsInput = void;
 export type GetRateLimitsResult = GetRateLimitsApiPlansRateLimitsGetData;
 
 /** Input type for postRateLimits method */
-export type PostRateLimitsInput = RateLimitCreate;
+export type PostRateLimitsInput = {
+  /** Tier Target Id */
+  tier_target_id: number;
+} & RateLimitCreate;
 
 /** Result type for postRateLimits method */
 export type PostRateLimitsResult = CreateRateLimitApiPlansRateLimitsPostData;

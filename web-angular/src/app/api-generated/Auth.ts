@@ -37,10 +37,15 @@ export class Auth {
 
       const url = host ? `${host}/api/auth/register` : "/api/auth/register";
 
+      const bodyPayload = resolvedParams;
+
       return {
         url,
         method: "POST",
-        body: resolvedParams,
+        body: bodyPayload,
+        headers: {
+          "Content-Type": "application/json",
+        },
       };
     });
   };
@@ -67,10 +72,15 @@ export class Auth {
         ? `${host}/api/auth/forgot-password`
         : "/api/auth/forgot-password";
 
+      const bodyPayload = resolvedParams;
+
       return {
         url,
         method: "POST",
-        body: resolvedParams,
+        body: bodyPayload,
+        headers: {
+          "Content-Type": "application/json",
+        },
       };
     });
   };
@@ -97,10 +107,15 @@ export class Auth {
         ? `${host}/api/auth/reset-password`
         : "/api/auth/reset-password";
 
+      const bodyPayload = resolvedParams;
+
       return {
         url,
         method: "POST",
-        body: resolvedParams,
+        body: bodyPayload,
+        headers: {
+          "Content-Type": "application/json",
+        },
       };
     });
   };
@@ -127,10 +142,15 @@ export class Auth {
         ? `${host}/api/auth/request-verify-token`
         : "/api/auth/request-verify-token";
 
+      const bodyPayload = resolvedParams;
+
       return {
         url,
         method: "POST",
-        body: resolvedParams,
+        body: bodyPayload,
+        headers: {
+          "Content-Type": "application/json",
+        },
       };
     });
   };
@@ -152,10 +172,15 @@ export class Auth {
 
       const url = host ? `${host}/api/auth/verify` : "/api/auth/verify";
 
+      const bodyPayload = resolvedParams;
+
       return {
         url,
         method: "POST",
-        body: resolvedParams,
+        body: bodyPayload,
+        headers: {
+          "Content-Type": "application/json",
+        },
       };
     });
   };
@@ -180,10 +205,19 @@ export class Auth {
 
       const url = host ? `${host}/api/auth/jwt/login` : "/api/auth/jwt/login";
 
+      const bodyPayload = resolvedParams;
+
       return {
         url,
         method: "POST",
-        body: resolvedParams,
+        body: new URLSearchParams(
+          Object.entries(bodyPayload)
+            .filter(([, value]) => value !== undefined && value !== null)
+            .map(([key, value]) => [key, String(value)]),
+        ),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
       };
     });
   };
@@ -233,10 +267,19 @@ export class Auth {
         ? `${host}/api/auth/cookie/login`
         : "/api/auth/cookie/login";
 
+      const bodyPayload = resolvedParams;
+
       return {
         url,
         method: "POST",
-        body: resolvedParams,
+        body: new URLSearchParams(
+          Object.entries(bodyPayload)
+            .filter(([, value]) => value !== undefined && value !== null)
+            .map(([key, value]) => [key, String(value)]),
+        ),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
       };
     });
   };
@@ -312,12 +355,21 @@ export class Auth {
         : "/api/auth/google/callback";
 
       const queryParams: Record<string, string> = {};
-      // Extract query parameters (excluding path parameters)
-      Object.entries(resolvedParams).forEach(([key, value]) => {
-        if (value !== undefined && value !== null) {
-          queryParams[key] = String(value);
-        }
-      });
+      if (resolvedParams.code !== undefined && resolvedParams.code !== null) {
+        queryParams["code"] = String(resolvedParams.code);
+      }
+      if (
+        resolvedParams.code_verifier !== undefined &&
+        resolvedParams.code_verifier !== null
+      ) {
+        queryParams["code_verifier"] = String(resolvedParams.code_verifier);
+      }
+      if (resolvedParams.state !== undefined && resolvedParams.state !== null) {
+        queryParams["state"] = String(resolvedParams.state);
+      }
+      if (resolvedParams.error !== undefined && resolvedParams.error !== null) {
+        queryParams["error"] = String(resolvedParams.error);
+      }
 
       return {
         url,
