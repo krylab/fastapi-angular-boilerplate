@@ -1,8 +1,9 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { createPopper } from '@popperjs/core';
 
 @Component({
   selector: 'app-notification-dropdown',
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './notification-dropdown.component.html',
 })
 export class NotificationDropdownComponent implements AfterViewInit {

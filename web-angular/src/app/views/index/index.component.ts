@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { FooterComponent } from '../../common/components/footers/footer/footer.component';
 import { IndexNavbarComponent } from '../../common/components/navbars/index-navbar/index-navbar.component';
@@ -6,6 +6,7 @@ import { IndexNavbarComponent } from '../../common/components/navbars/index-navb
 @Component({
   selector: 'app-index',
   templateUrl: './index.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [RouterLink, IndexNavbarComponent, FooterComponent],
 })
 export class IndexComponent {}

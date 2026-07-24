@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-card-stats',
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './card-stats.component.html',
 })
 export class CardStatsComponent implements OnInit {

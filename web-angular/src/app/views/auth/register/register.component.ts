@@ -1,4 +1,4 @@
-import { Component, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, effect, inject, OnInit, signal, ChangeDetectionStrategy } from '@angular/core';
 import { AbstractControl, FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { environment } from '../../../../environments/environment';
@@ -8,6 +8,7 @@ import { RegisterInput } from '../../../api-generated/data-contracts';
 @Component({
   selector: 'app-register',
   templateUrl: './register.component.html',
+  changeDetection: ChangeDetectionStrategy.Eager,
   imports: [ReactiveFormsModule],
 })
 export class RegisterComponent implements OnInit {

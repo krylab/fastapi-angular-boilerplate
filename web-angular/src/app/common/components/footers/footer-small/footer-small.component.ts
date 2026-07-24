@@ -1,7 +1,8 @@
-import { Component, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, ChangeDetectionStrategy } from '@angular/core';
 
 @Component({
   selector: 'app-footer-small',
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './footer-small.component.html',
 })
 export class FooterSmallComponent implements OnInit {

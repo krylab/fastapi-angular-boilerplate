@@ -1,8 +1,9 @@
-import { AfterViewInit, Component, ElementRef, ViewChild } from '@angular/core';
+import { AfterViewInit, Component, ElementRef, ViewChild, ChangeDetectionStrategy } from '@angular/core';
 import { createPopper } from '@popperjs/core';
 
 @Component({
   selector: 'app-user-dropdown',
+  changeDetection: ChangeDetectionStrategy.Eager,
   templateUrl: './user-dropdown.component.html',
 })
 export class UserDropdownComponent implements AfterViewInit {
