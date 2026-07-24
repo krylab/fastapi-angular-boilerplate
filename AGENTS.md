@@ -29,5 +29,7 @@ Copy env defaults once: `cp .env.example .env` (points the app at `localhost` fo
 
 ### Notes / gotchas
 
+- The Angular frontend is on Angular 22, which requires Node.js >= 24.15 (or >= 22.22.3); the environment ships Node 24 on `PATH` (`/usr/local/bin/node`). Older Node makes `ng`/`@angular/cli` refuse to run. The auth forms use stable Signal Forms (`@angular/forms/signals`, `form()` + `[formField]`), not `ReactiveFormsModule`.
+
 - The Angular UI is based on the Notus template. Registration through the UI works and persists a real user in the backend, but the login form's submit button is not wired up and a transient `NG0100` (ExpressionChangedAfterItHasBeenChecked) dev-mode toast can appear on the login page. These are pre-existing template quirks, not environment problems. Exercise auth end-to-end via the API (`POST /api/auth/register`, `POST /api/auth/jwt/login`) when you need a token.
 - Redis and Kafka are not currently wired into any production route, so the backend and Angular UI run fine without them; they are only required to run the full `pytest` suite.
