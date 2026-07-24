@@ -14,7 +14,7 @@ const pathParamsNames = _.map(pathParams, "name");
 // Load dynamic naming utilities
 const namingUtils = includeFile("./naming-utils", { utils });
 
-// Collect all routes for analysis
+// Collect all routes for analysis (modular + combined)
 const allRoutes = [];
 if (routes && routes.combined) {
   routes.combined.forEach(group => {
@@ -23,81 +23,59 @@ if (routes && routes.combined) {
     }
   });
 }
+if (config.modular && it.route && it.route.routes) {
+  allRoutes.push(...it.route.routes);
+}
 
 // Get dynamic naming for this route
 const routeNaming = namingUtils.getRouteNaming(route, allRoutes, utils);
 
-const argToTmpl = ({ name, optional, type, defaultValue }) => `${name}${!defaultValue && optional ? '?' : ''}: ${type}${defaultValue ? ` = ${defaultValue}` : ''}`;
-
-const rawWrapperArgs = config.extractRequestParams ?
-    _.compact([
-        requestParams && {
-          name: pathParams.length ? `{ ${_.join(pathParamsNames, ", ")}, ...${queryName} }` : queryName,
-          optional: false,
-          type: getInlineParseContent(requestParams),
-        },
-        ...(!requestParams ? pathParams : []),
-        payload,
-    ]) :
-    _.compact([
-        ...pathParams,
-        query,
-        payload,
-    ])
-
-const wrapperArgs = _
-    // Sort by optionality
-    .sortBy(rawWrapperArgs, [o => o.optional])
-    .map(argToTmpl)
-    .join(', ')
-
-const bodyTmpl = _.get(payload, "name") || null;
-const queryTmpl = (query != null && queryName) || null;
-
-const hasParams = wrapperArgs.length > 0;
+const hasParams = pathParams.length > 0 || !!query || !!payload;
 
 const isValidIdentifier = (name) => /^[A-Za-z_$][A-Za-z0-9_$]*$/.test(name);
 
-// Fix parameter type to include Types namespace if it's a custom type
-const getTypeWithNamespace = (paramType) => {
-  if (!paramType) return 'any';
-  // If it's a primitive type, return as-is
-  if (['string', 'number', 'boolean', 'any', 'unknown', 'void'].includes(paramType)) {
-    return paramType;
-  }
-  // If it already has Types namespace, return as-is
-  if (paramType.startsWith('Types.')) {
-    return paramType;
-  }
-  // Add Types namespace for custom types
-  return `Types.${paramType}`;
-};
-
-// Determine the correct parameter type using method-specific types
-let requestParamsType = 'any';
-if (requestParams) {
-  requestParamsType = getTypeWithNamespace(getInlineParseContent(requestParams));
-} else if (payload && payload.type) {
-  // Use the payload type directly for request body
-  const payloadType = getTypeWithNamespace(payload.type);
-  if (query && query.type) {
-    const queryType = getTypeWithNamespace(query.type);
-    requestParamsType = `{ data: ${payloadType} } & ${queryType}`;
-  } else {
-    requestParamsType = `{ data: ${payloadType} }`;
-  }
-} else if (query && query.type) {
-  requestParamsType = getTypeWithNamespace(query.type);
-}
-
-// Use dynamic naming from the analysis
+// Use method-specific types instead of original types
 const simpleMethodName = routeNaming.methodName;
 const inputTypeName = routeNaming.inputTypeName;
 const resultTypeName = routeNaming.resultTypeName;
-
-// Use method-specific types instead of original types
 const methodInputType = `Types.${inputTypeName}`;
 const methodResultType = `Types.${resultTypeName}`;
+
+// Resolve query parameter names from requestParams metadata
+const queryParamNames = [];
+if (query && requestParams && requestParams.rawTypeData && requestParams.rawTypeData.properties) {
+  Object.values(requestParams.rawTypeData.properties).forEach((prop) => {
+    if (prop.in === "query") {
+      queryParamNames.push(prop.name);
+    }
+  });
+}
+
+const nonBodyKeys = [...pathParamsNames, ...queryParamNames];
+const hasNonBodyKeys = nonBodyKeys.length > 0;
+const hasBody = !!payload;
+const isUrlEncoded = requestBodyInfo && requestBodyInfo.contentKind === "URL_ENCODED";
+const isFormData = requestBodyInfo && requestBodyInfo.contentKind === "FORM_DATA";
+
+// swagger-typescript-api already converts OpenAPI path params to JS template form
+// e.g. "/api/plans/tiers/${tierId}" — reuse that instead of raw.route placeholders
+const buildUrlPathTemplate = () => {
+  if (!hasParams || pathParams.length === 0) {
+    return path;
+  }
+
+  let urlPath = path;
+  pathParams.forEach((param) => {
+    urlPath = urlPath.replace(
+      "${" + param.name + "}",
+      "${resolvedParams." + param.name + "}",
+    );
+  });
+  return urlPath;
+};
+
+const urlPathTemplate = buildUrlPathTemplate();
+const hasPathParams = pathParams.length > 0;
 %>
 
 /**
@@ -115,53 +93,64 @@ const methodResultType = `Types.${resultTypeName}`;
     const resolvedParams = params();
     if (!resolvedParams) return undefined;
     <% } %>
-    
-    <% if (pathParams.length > 0) { %>
-    let url = host ? `${host}<%~ raw.route %>` : '<%~ raw.route %>';
-    <% pathParams.forEach(param => { %>
-    <% if (hasParams) { %>
-    url = url.replace('{<%~ param.name %>}', String(resolvedParams.<%~ param.name %>));
-    <% } %>
-    <% }); %>
+
+    <% if (hasPathParams) { %>
+    const url = host ? `${host}<%~ urlPathTemplate %>` : `<%~ urlPathTemplate %>`;
     <% } else { %>
-    const url = host ? `${host}<%~ raw.route %>` : '<%~ raw.route %>';
+    const url = host ? `${host}<%~ path %>` : '<%~ path %>';
     <% } %>
 
-    <% if (query) { %>
+    <% if (query && queryParamNames.length > 0) { %>
     const queryParams: Record<string, string> = {};
-    <% if (hasParams) { %>
-    // Extract query parameters (excluding path parameters)
-    <% if (pathParams.length > 0) { %>
-    const pathParamNames = [<%~ pathParamsNames.map(name => `'${name}'`).join(', ') %>];
-    Object.entries(resolvedParams).forEach(([key, value]) => {
-      if (!pathParamNames.includes(key) && value !== undefined && value !== null) {
-        queryParams[key] = String(value);
-      }
-    });
-    <% } else { %>
-    Object.entries(resolvedParams).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        queryParams[key] = String(value);
-      }
-    });
+    <% queryParamNames.forEach((name) => { %>
+    if (resolvedParams.<%~ name %> !== undefined && resolvedParams.<%~ name %> !== null) {
+      queryParams['<%~ name %>'] = String(resolvedParams.<%~ name %>);
+    }
+    <% }); %>
     <% } %>
+
+    <% if (hasBody && hasParams) { %>
+    <% if (hasNonBodyKeys) { %>
+    const bodyPayload = Object.fromEntries(
+      Object.entries(resolvedParams).filter(([key]) => !<%~ JSON.stringify(nonBodyKeys) %>.includes(key)),
+    );
+    <% } else { %>
+    const bodyPayload = resolvedParams;
     <% } %>
     <% } %>
 
     return {
       url,
       method: '<%~ _.upperCase(method) %>',
-      <% if (query) { %>
+      <% if (query && queryParamNames.length > 0) { %>
       params: queryParams,
       <% } %>
-      <% if (bodyTmpl && hasParams) { %>
-      body: resolvedParams,
+      <% if (hasBody && hasParams) { %>
+      <% if (isUrlEncoded) { %>
+      body: new URLSearchParams(
+        Object.entries(bodyPayload)
+          .filter(([, value]) => value !== undefined && value !== null)
+          .map(([key, value]) => [key, String(value)]),
+      ),
+      <% } else if (isFormData) { %>
+      body: (() => {
+        const form = new FormData();
+        Object.entries(bodyPayload).forEach(([key, value]) => {
+          if (value !== undefined && value !== null) {
+            form.append(key, value instanceof Blob ? value : String(value));
+          }
+        });
+        return form;
+      })(),
+      <% } else { %>
+      body: bodyPayload,
       <% } %>
-      <% if (requestBodyInfo.contentType) { %>
+      <% } %>
+      <% if (requestBodyInfo && (requestBodyInfo.contentType || (requestBodyInfo.contentTypes && requestBodyInfo.contentTypes[0]))) { %>
       headers: {
-        'Content-Type': '<%~ requestBodyInfo.contentType %>'
-      }
+        'Content-Type': '<%~ requestBodyInfo.contentType || requestBodyInfo.contentTypes[0] %>',
+      },
       <% } %>
     };
   });
-}; 
+};

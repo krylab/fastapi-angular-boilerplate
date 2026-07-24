@@ -57,10 +57,15 @@ export class Users {
 
       const url = host ? `${host}/api/users/me` : "/api/users/me";
 
+      const bodyPayload = resolvedParams;
+
       return {
         url,
         method: "PATCH",
-        body: resolvedParams,
+        body: bodyPayload,
+        headers: {
+          "Content-Type": "application/json",
+        },
       };
     });
   };
@@ -84,8 +89,9 @@ export class Users {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
-      let url = host ? `${host}/api/users/{id}` : "/api/users/{id}";
-      url = url.replace("{id}", String(resolvedParams.id));
+      const url = host
+        ? `${host}/api/users/${resolvedParams.id}`
+        : `/api/users/${resolvedParams.id}`;
 
       return {
         url,
@@ -113,13 +119,21 @@ export class Users {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
-      let url = host ? `${host}/api/users/{id}` : "/api/users/{id}";
-      url = url.replace("{id}", String(resolvedParams.id));
+      const url = host
+        ? `${host}/api/users/${resolvedParams.id}`
+        : `/api/users/${resolvedParams.id}`;
+
+      const bodyPayload = Object.fromEntries(
+        Object.entries(resolvedParams).filter(([key]) => !["id"].includes(key)),
+      );
 
       return {
         url,
         method: "PATCH",
-        body: resolvedParams,
+        body: bodyPayload,
+        headers: {
+          "Content-Type": "application/json",
+        },
       };
     });
   };
@@ -143,8 +157,9 @@ export class Users {
       const resolvedParams = params();
       if (!resolvedParams) return undefined;
 
-      let url = host ? `${host}/api/users/{id}` : "/api/users/{id}";
-      url = url.replace("{id}", String(resolvedParams.id));
+      const url = host
+        ? `${host}/api/users/${resolvedParams.id}`
+        : `/api/users/${resolvedParams.id}`;
 
       return {
         url,

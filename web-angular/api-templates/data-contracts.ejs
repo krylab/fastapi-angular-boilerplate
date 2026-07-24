@@ -14,6 +14,9 @@ if (routes && routes.combined) {
     }
   });
 }
+if (config.modular && it.route && it.route.routes) {
+  allRoutes.push(...it.route.routes);
+}
 
 const buildGenerics = (contract) => {
   if (!contract.genericArgs || !contract.genericArgs.length) return '';
@@ -97,7 +100,15 @@ const simpleMethodName = routeNaming.methodName;
 <% const hasQuery = route.request.query && route.request.query.type; %>
 <% const hasPathParams = pathParams.length > 0; %>
 
-<% if (hasPayload && hasPathParams) { %>
+<% if (hasPayload && hasPathParams && hasQuery) { %>
+/** Input type for <%~ simpleMethodName %> method */
+export type <%~ inputTypeName %> = {
+<% pathParams.forEach(param => { %>
+  /** <%~ param.description || param.name %> */
+  <%~ param.name %>: <%~ param.type %>;
+<% }); %>
+} & <%~ route.request.query.type %> & <%~ route.request.payload.type %>;
+<% } else if (hasPayload && hasPathParams) { %>
 /** Input type for <%~ simpleMethodName %> method */
 export type <%~ inputTypeName %> = {
 <% pathParams.forEach(param => { %>
@@ -105,6 +116,9 @@ export type <%~ inputTypeName %> = {
   <%~ param.name %>: <%~ param.type %>;
 <% }); %>
 } & <%~ route.request.payload.type %>;
+<% } else if (hasPayload && hasQuery) { %>
+/** Input type for <%~ simpleMethodName %> method */
+export type <%~ inputTypeName %> = <%~ route.request.query.type %> & <%~ route.request.payload.type %>;
 <% } else if (hasPayload) { %>
 /** Input type for <%~ simpleMethodName %> method */
 export type <%~ inputTypeName %> = <%~ route.request.payload.type %>;

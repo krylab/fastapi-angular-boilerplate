@@ -99,7 +99,10 @@ function convertConfigToOptions(config) {
     url: config.path, // Use 'url' for remote OpenAPI spec
 
     // Output configuration
-    output: path.resolve(process.cwd(), config.output || "src/app/api-generated"),
+    output: path.resolve(
+      process.cwd(),
+      process.env.API_GENERATE_OUTPUT || config.output || "src/app/api-generated",
+    ),
     name: config.name || "ApiClient.ts",
 
     // Templates and naming
@@ -248,6 +251,7 @@ Options:
   --help, -h     Show this help message
   --debug        Enable debug output
   --clean-only   Only run the cleaning default swagger-typescript-api stuff (unnecessary block)
+  --output DIR   Override output directory (useful for debugging without hot-reload)
 
 Configuration:
   Reads from generate-api.config.js in the project root.
@@ -262,6 +266,7 @@ Features:
 Examples:
   node scripts/generate-api.js                 # Generate and clean API
   node scripts/generate-api.js --clean-only    # Only clean existing files
+  node scripts/generate-api.js --output /tmp/api-gen-debug
   DEBUG=1 node scripts/generate-api.js --debug # Generate with debug output
 `);
     return;
@@ -269,6 +274,16 @@ Examples:
 
   if (args.includes("--debug")) {
     process.env.DEBUG = "1";
+  }
+
+  const outputArgIndex = args.indexOf("--output");
+  if (outputArgIndex !== -1) {
+    const outputOverride = args[outputArgIndex + 1];
+    if (!outputOverride) {
+      console.error("❌ --output requires a directory path");
+      process.exit(1);
+    }
+    process.env.API_GENERATE_OUTPUT = outputOverride;
   }
 
   if (args.includes("--clean-only")) {
